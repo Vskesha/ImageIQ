@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="text-center">
+    <main class="form-signup">
+        <form action="/signup" method="post" autocomplete="off">
+            <h1 class="h1_mb">Create an Account</h1>
+            <div class="form-floating">
+                <label for="username">Name</label>
+                <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="name_example"/>
+            </div>
+            <div class="form-floating">
+                <label for="email">Email Address</label>
+                <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="name@example.com"/>
+            </div>
+            <div class="form-floating">
+                <label for="floatingPassword">Password</label>
+                <input
+                    type="password"
+                    class="form-control"
+                    id="floatingPassword"
+                    placeholder="password"
+                    name="password"/>
+            </div>
+            <div class="form-floating">
+                <label for="confirm_password">Confirm Password</label>
+                <input
+                    type="password"
+                    class="form-control"
+                    id="confirm_password"
+                    placeholder="password"
+                    name="confirm_password"/>
+            </div>
+            <button class="btn_signup" type="submit">Sign Up</button>
+            <p class="p_signup">&copy; 2023</p>
+        </form>
+    </main>
+    <script src="js/signup.js"></script>
+</body>
+</html>
