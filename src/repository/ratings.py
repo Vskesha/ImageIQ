@@ -48,7 +48,11 @@ async def get_ratings(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.IMAGE_NOT_FOUND)
 
     # Get all ratings for the image
+<<<<<<< Updated upstream
     ratings = db.query(Rating).filter(Rating.image_id == image_id).all() 
+=======
+    ratings = db.query(Rating).filter(Rating.image_id == image_id).all()
+>>>>>>> Stashed changes
 
     return ratings
 
@@ -70,5 +74,9 @@ async def remove_rating(
     # Delete the rating
     db.delete(rating)
     db.commit()
+<<<<<<< Updated upstream
+=======
+    db.refresh(image)
+>>>>>>> Stashed changes
 
     return {'message': messages.RATING_DELETED}
