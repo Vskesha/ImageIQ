@@ -3,32 +3,24 @@ from sqlalchemy.orm import Session
 from src.database.models import Comment, User, Role
 from src.database.db import get_db
 from fastapi.security import  HTTPBearer
-from src.services.auth import get_current_user
+from src.services.auth import auth_service
+from src.repository.comments import get_comment
 
 router = APIRouter(prefix='/comments', tags=['comments'])
 security = HTTPBearer()
  
+get_current_user = auth_service.token_manager.get_current_user
 
 
-
-def get_comment(db: Session, comment_id: int):
-    return db.query(Comment).filter(Comment.id == comment_id).first()
-
-@router.post("/users/", response_model=User)
-async def create_user(username: str, email: str, password: str, role: str = "user", db: Session = Depends(get_db)):
-    user = User(username=username, email=email, password=password, role=role)
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
 
 @router.post("/comments/", response_model=Comment)
-async def add_comment(comment: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    db_comment = Comment(comment=comment, user_id=current_user.id)
+async def add_comment(image_id: int, comment: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    db_comment = Comment(comment=comment, user_id=current_user.id, image_id=image_id)
     db.add(db_comment)
     db.commit()
     db.refresh(db_comment)
     return db_comment
+
 
 @router.get("/comments", response_model=list[Comment])
 async def get_comments_by_image_id(image_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -54,4 +46,3 @@ async def remove_comment(comment_id: int, db: Session = Depends(get_db), current
     db.delete(db_comment)
     db.commit()
     return db_comment
-
