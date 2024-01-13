@@ -1,8 +1,7 @@
-from typing import Optional, List
+from typing import List
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 
 from src.conf import messages
 from src.database.models import Rating, Image, User
@@ -48,11 +47,7 @@ async def get_ratings(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.IMAGE_NOT_FOUND)
 
     # Get all ratings for the image
-<<<<<<< Updated upstream
-    ratings = db.query(Rating).filter(Rating.image_id == image_id).all() 
-=======
     ratings = db.query(Rating).filter(Rating.image_id == image_id).all()
->>>>>>> Stashed changes
 
     return ratings
 
