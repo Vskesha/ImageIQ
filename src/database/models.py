@@ -60,7 +60,6 @@ class Tag(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(20), nullable=False, unique=True)
 
-
 class Image(Base):
     __tablename__ = 'images'
     id: Mapped[int] = mapped_column(primary_key=True)

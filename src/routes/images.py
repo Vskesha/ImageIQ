@@ -149,7 +149,7 @@ async def transform_image(
     transform_image_link = CloudImage.transformation(image, type)
     body = {
         'description': image.description,
-        'links': transform_image_link,
+        'link': transform_image_link,
         'tags': image.tags,
         'type': image.type
     }
