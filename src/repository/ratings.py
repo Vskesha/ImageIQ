@@ -69,9 +69,5 @@ async def remove_rating(
     # Delete the rating
     db.delete(rating)
     db.commit()
-<<<<<<< Updated upstream
-=======
-    db.refresh(image)
->>>>>>> Stashed changes
 
     return {'message': messages.RATING_DELETED}

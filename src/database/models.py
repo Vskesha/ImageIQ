@@ -86,6 +86,7 @@ class Comment(Base):
     created_at: Mapped[date] = mapped_column(DateTime, default=func.now())
     updated_at: Mapped[date] = mapped_column(DateTime, default=func.now(), onupdate=func.now())
 
+
 class Rating(Base):
     __tablename__ = 'ratings'
 
