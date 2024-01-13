@@ -243,24 +243,4 @@ async def get_images_by_tag(tag: Tag, sort_direction: SortDirection, db: Session
         query = query.order_by(desc(Image.created_at))
 
     return query.all()
-    # if not images:
-    #     print(f"No images found for tag '{tag.name}' with sort direction '{sort_direction.value}'")
-    #     return []
-
-
-# async def get_images_by_user(user_id, sort_direction, db):
-#     """
-#     The get_images_by_user function returns a list of images that are associated with the user_id provided.
-#     The sort_direction parameter is used to determine whether the results should be sorted in ascending or descending order.
-#
-#     :param user_id: Filter the images by user
-#     :param sort_direction: Determine whether the images should be sorted in ascending or descending order
-#     :param db: Pass the database connection to the function
-#     :return: A list of image objects that are associated with a user
-#     :doc-author: Trelent
-#     """
-#     if sort_direction.value == 'desc':
-#         images = db.query(Image).filter_by(user_id=user_id).order_by(desc(Image.created_at)).all()
-#     else:
-#         images = db.query(Image).filter_by(user_id=user_id).order_by(asc(Image.created_at)).all()
-#     return images
+  
