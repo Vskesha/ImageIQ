@@ -1,6 +1,6 @@
 from fastapi import  HTTPException, Depends, status, APIRouter
 from sqlalchemy.orm import Session
-from src.database.models import Comment, User, Role
+from src.database.models import Comment, User, Role, Image
 from src.database.db import get_db
 from fastapi.security import  HTTPBearer
 from src.services.auth import auth_service
@@ -15,6 +15,12 @@ get_current_user = auth_service.token_manager.get_current_user
 
 @router.post("/comments/", response_model=Comment)
 async def add_comment(image_id: int, comment: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+     
+    image = db.query(Image).filter(Image.id == image_id).first()
+    if not image:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Image not found")
+
+     
     db_comment = Comment(comment=comment, user_id=current_user.id, image_id=image_id)
     db.add(db_comment)
     db.commit()

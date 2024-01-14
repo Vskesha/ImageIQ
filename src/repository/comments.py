@@ -4,8 +4,8 @@ from src.database.models import Comment, User, Role
 from datetime import datetime
 
 
-def get_comment(db: Session, comment_id: int):
-    return db.query(Comment).filter(Comment.id == comment_id).first()
+async def get_comment(session: Session, comment_id: int):
+    return session.query(Comment).filter(Comment.id == comment_id).first()
 
 
 async def get_comments(session: Session, image_id: int):
