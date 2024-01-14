@@ -18,3 +18,5 @@ REST API for photo share
 8. Створюємо свою нову гілку від `dev`, робимо свої зміни.
 9. Для запуску сервера запускаємо файл `main` або командою в терміналі  
 `uvicorn main:app --host localhost --port 9024 --reload`
+10. lkdjskal;fjlk
+11. 
