@@ -1,6 +1,7 @@
 from fastapi import  HTTPException, Depends, status, APIRouter
 from sqlalchemy.orm import Session
-from src.database.models import Comment, User, Role, Image
+from src.database.models import Comment,  User, Role, Image
+from src.schemas.images import CommentResponse
 from src.database.db import get_db
 from fastapi.security import  HTTPBearer
 from src.services.auth import auth_service
@@ -13,7 +14,7 @@ get_current_user = auth_service.token_manager.get_current_user
 
 
 
-@router.post("/comments/", response_model=Comment)
+@router.post("/comments/", response_model=CommentResponse)
 async def add_comment(image_id: int, comment: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
      
     image = db.query(Image).filter(Image.id == image_id).first()
@@ -28,12 +29,12 @@ async def add_comment(image_id: int, comment: str, db: Session = Depends(get_db)
     return db_comment
 
 
-@router.get("/comments", response_model=list[Comment])
+@router.get("/comments", response_model=list[CommentResponse])
 async def get_comments_by_image_id(image_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     comments = db.query(Comment).filter(Comment.image_id == image_id).all()
     return comments
 
-@router.put("/comments/{comment_id}", response_model=Comment)
+@router.put("/comments/{comment_id}", response_model=CommentResponse)
 async def update_comment(comment_id: int, comment: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     db_comment = get_comment(db, comment_id)
     if db_comment.user_id != current_user.id:
@@ -43,7 +44,7 @@ async def update_comment(comment_id: int, comment: str, db: Session = Depends(ge
     db.refresh(db_comment)
     return db_comment
 
-@router.delete("/comments/{comment_id}", response_model=Comment)
+@router.delete("/comments/{comment_id}", response_model=CommentResponse)
 async def remove_comment(comment_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     db_comment = get_comment(db, comment_id)
     allowed_roles = {Role.admin, Role.moderator}
