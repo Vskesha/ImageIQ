@@ -60,6 +60,7 @@ class Tag(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(20), nullable=False, unique=True)
 
+
 class Image(Base):
     __tablename__ = 'images'
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -84,6 +85,7 @@ class Comment(Base):
     image: Mapped[Image] = relationship("Image", backref='comments')
     created_at: Mapped[date] = mapped_column(DateTime, default=func.now())
     updated_at: Mapped[date] = mapped_column(DateTime, default=func.now(), onupdate=func.now())
+
 
 class Rating(Base):
     __tablename__ = 'ratings'

@@ -18,9 +18,18 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 security = HTTPBearer()
 
 template_directories = ['src/services/templates', 'static/client']
-
-#
 templates = Jinja2Templates(directory=template_directories)
+
+
+@router.post("/logout")
+async def logout_new_route(token: str = Depends(auth_service.token_manager.oauth2_scheme),
+                           db: Session = Depends(get_db)):
+    try:
+        await auth_service.token_manager.logout_user(token=token, db=db)
+        return "You have logged out!!!"
+    except HTTPException as e:
+        return e
+
 
 @router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def signup(request: Request, body: UserModel, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
@@ -63,24 +72,23 @@ async def login(body: OAuth2PasswordRequestForm = Depends(), db: Session = Depen
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email not confirmed")
     if not auth_service.password_manager.verify_password(body.password, user.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid password")
-
     access_token = await auth_service.token_manager.create_access_token(data={"sub": user.email})
     refresh_token = await auth_service.token_manager.create_refresh_token(data={"sub": user.email})
     await repository_users.update_token(user, refresh_token, db)
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
 
-@router.get("/refresh_token", response_model=TokenModel)
+@router.get('/refresh_token', response_model=TokenModel)
 async def refresh_token(credentials: HTTPAuthorizationCredentials = Security(security), db: Session = Depends(get_db)):
     """
-    The refresh_token function is used to refresh the access token.
-        The function takes in a refresh token and returns an access_token, a new refresh_token, and the type of token.
-        If there is no user with that email or if the user's current refresh_token does not match what was passed in,
-        then it will return an HTTP 401 Unauthorized error.
+        The refresh_token function is used to refresh the access token.
+            The function takes in a refresh token and returns an access_token, a new refresh_token, and the type of token.
+            If there is no user with that email or if the user's current refresh_token does not match what was passed in,
+            then it will return an HTTP 401 Unauthorized error.
 
-    :param credentials: HTTPAuthorizationCredentials: Get the token from the request header
-    :param db: Session: Get a database session
-    :return: A dictionary with the new access_token, refresh_token and token type
+        :param credentials: HTTPAuthorizationCredentials: Get the token from the request header
+        :param db: Session: Get a database session
+        :return: A dictionary with the new access_token, refresh_token and token type
     """
     token = credentials.credentials
     email = await auth_service.token_manager.decode_refresh_token(token)
@@ -88,10 +96,11 @@ async def refresh_token(credentials: HTTPAuthorizationCredentials = Security(sec
     if user.refresh_token != token:
         await repository_users.update_token(user, None, db)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
+
     access_token = await auth_service.token_manager.create_access_token(data={"sub": email})
-    refresh_token = await auth_service.token_manager.decode_refresh_token(data={"sub": email})
-    await repository_users.update_token(user, refresh_token, db)
-    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+    new_refresh_token = await auth_service.token_manager.create_refresh_token(data={"sub": email})
+    await repository_users.update_token(user, new_refresh_token, db)
+    return {"access_token": access_token, "refresh_token": new_refresh_token, "token_type": "bearer"}
 
 
 @router.get("/confirmed_email/{token}")
@@ -118,7 +127,6 @@ async def confirmed_email(token: str, db: Session = Depends(get_db)):
     return RedirectResponse(url="/api/auth/email-confirm/done", status_code=status.HTTP_303_SEE_OTHER)
 
 
-
 @router.post("/request_email")
 async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, request: Request,
                         db: Session = Depends(get_db)):
@@ -142,21 +150,17 @@ async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, r
     return JSONResponse(content={'message': messages.MSC401_EMAIL_UNKNOWN})
 
 
-
 @router.get("/email-confirm/complate", response_class=HTMLResponse, description="Request password reset Page")
 async def email_confirm_complite(request: Request) -> _TemplateResponse:
     """
     The email_confirm_complite function is used to confirm the email address of a user.
         It takes in a request object and returns an HTML template response with the title &quot;Email Confirmation Complete&quot;.
-
-
     :param request: Request: Get the request object
     :return: A message that the password has been sent to your email
     :doc-author: Trelent
     """
     return templates.TemplateResponse("email_confirm_сomplate.html", {"request": request,
-                                                                   "title": messages.MSG_SENT_PASSWORD})
-
+                                                                      "title": messages.MSG_SENT_PASSWORD})
 
 @router.get("/email-confirm/done", response_class=HTMLResponse, description="Request password reset Page")
 async def email_confirm_done(request: Request) -> _TemplateResponse:
@@ -170,31 +174,11 @@ async def email_confirm_done(request: Request) -> _TemplateResponse:
     :doc-author: Trelent
     """
     return templates.TemplateResponse("email_confirm_done.html", {"request": request,
-                                                                   "title": messages.MSG_SENT_PASSWORD})
-
-
-@router.get("/logout", response_class=HTMLResponse, status_code=status.HTTP_205_RESET_CONTENT)
-async def logout(
-           credentials: HTTPAuthorizationCredentials = Security(security),
-           current_user: dict = Depends(auth_service.token_manager.logout_user)
-           ) -> RedirectResponse:
-    """
-    The logout function is used to logout a user.
-
-    :param credentials: HTTPAuthorizationCredentials: Get the credentials from the request
-    :param current_user: dict: Pass the user's information to the logout function
-    :return: A redirectresponse to the login page
-    :doc-author: Trelent
-    """
-    message = "Logout successful. You are now logged out."
-    redirect_url = f"/login?message={message}"
-    return RedirectResponse(url=redirect_url, status_code=status.HTTP_205_RESET_CONTENT)
-
+                                                                  "title": messages.MSG_SENT_PASSWORD})
 
 @router.get("/reset-password/confirm/{token}", response_class=HTMLResponse, status_code=status.HTTP_303_SEE_OTHER)
 async def reset_password_confirm(token: str, background_tasks: BackgroundTasks, request: Request,
                                  db: Session = Depends(get_db)) -> dict:
-
     """
     The reset_password_confirm function is used to reset a user's password.
         It takes the token from the URL and uses it to get the email of the user who requested a password reset.
@@ -234,7 +218,7 @@ async def reset_password_confirm(token: str, background_tasks: BackgroundTasks, 
 
 @router.post("/reset-password")
 async def reset_password(body: RequestEmail, background_tasks: BackgroundTasks, request: Request,
-                          db: Session = Depends(get_db)) -> JSONResponse:
+                         db: Session = Depends(get_db)) -> JSONResponse:
     """
     The reset_password function is used to send a password reset email to the user.
         The function takes in an email address and sends a password reset link to that address.
@@ -256,7 +240,6 @@ async def reset_password(body: RequestEmail, background_tasks: BackgroundTasks, 
     return JSONResponse(content={'message': messages.MSC401_EMAIL_UNKNOWN}, status_code=404)
 
 
-
 @router.get("/reset-password/done_request", response_class=HTMLResponse, description="Request password reset Page")
 async def reset_password_done(request: Request) -> _TemplateResponse:
     """
@@ -269,8 +252,3 @@ async def reset_password_done(request: Request) -> _TemplateResponse:
     """
     return templates.TemplateResponse("password_reset_done.html", {"request": request,
                                                                    "title": messages.MSG_SENT_PASSWORD})
-
-
-
-
-

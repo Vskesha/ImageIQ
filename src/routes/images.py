@@ -1,17 +1,14 @@
 from typing import Optional, List
 from fastapi import APIRouter, Depends, File, HTTPException, Path, Security, status, UploadFile, Query
 from fastapi_limiter.depends import RateLimiter
-from fastapi_pagination import add_pagination, Page, Params
-from fastapi.security import HTTPAuthorizationCredentials
+from fastapi_pagination import Page, Params
 from starlette.responses import StreamingResponse
 from sqlalchemy.orm import Session
-from src.conf.config import settings
 from src.conf import messages
 from src.database.db import get_db
 from src.database.models import Image, TransformationsType
 from src.repository import images as repository_images
 from src.repository import tags as repository_tags
-from src.repository import users as repository_users
 from src.schemas.images import ImageModel, ImageResponse, SortDirection
 from src.schemas.users import MessageResponse
 from src.services.auth import auth_service
@@ -112,7 +109,7 @@ async def get_image(
         return image
 
 
-@router.post('/transaction/{image_id}',
+@router.post('/transaction/{image_id}/{type}',
             description='Transform image.\nNo more than 12 requests per minute',
             dependencies=[
                  Depends(allowed_all_roles_access),
