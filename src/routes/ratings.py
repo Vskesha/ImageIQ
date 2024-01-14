@@ -1,17 +1,19 @@
 from typing import Optional, List
 
 from fastapi import APIRouter, Depends, Path, Security, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi_limiter.depends import RateLimiter
 from sqlalchemy.orm import Session
 
 from src.conf import messages
 from src.conf.config import settings
 from src.database.db import get_db
+from src.database.models import User
 from src.database.models import Rating
 from src.schemas.images import RatingResponse, RatingModel
 from src.schemas.users import MessageResponse
 from src.services.auth import auth_service
+from src.services.auth import AuthUser
 from src.services.role import allowed_all_roles_access, allowed_admin_moderator
 
 from src.repository import images as repository_images
