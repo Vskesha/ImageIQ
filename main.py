@@ -13,7 +13,8 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from src.database.db import get_db
-from src.routes import users, auth, images, comments
+from src.routes import users, auth, images, comments, ratings
+
 from starlette.middleware.cors import CORSMiddleware
 from src.conf.config import settings
 
@@ -111,6 +112,7 @@ app.include_router(users.router, prefix='/api')
 app.include_router(auth.router, prefix='/api')
 app.include_router(images.router, prefix='/api')
 app.include_router(comments.router, prefix='/api')
+app.include_router(ratings.router, prefix='/api')
 
 
 if __name__ == "__main__":

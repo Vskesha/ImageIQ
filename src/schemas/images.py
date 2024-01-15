@@ -58,6 +58,7 @@ class RatingModel(BaseModel):
 
 class RatingResponse(RatingModel):
     id: int
+    rating: Optional[float] = Field(ge=1, le=5)
 
     class Config:
         orm_mode = True
