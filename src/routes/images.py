@@ -1,12 +1,15 @@
 from typing import Optional, List
+
 from fastapi import APIRouter, Depends, File, HTTPException, Path, Security, status, UploadFile, Query
+from fastapi.security import HTTPBearer
 from fastapi_limiter.depends import RateLimiter
 from fastapi_pagination import Page, Params
-from starlette.responses import StreamingResponse
 from sqlalchemy.orm import Session
+from starlette.responses import StreamingResponse
+
 from src.conf import messages
 from src.database.db import get_db
-from src.database.models import Image, TransformationsType
+from src.database.models import Image, TransformationsType, User
 from src.repository import images as repository_images
 from src.repository import tags as repository_tags
 from src.schemas.images import ImageModel, ImageResponse, SortDirection
@@ -14,13 +17,9 @@ from src.schemas.users import MessageResponse
 from src.services.auth import auth_service
 from src.services.cloud_image import CloudImage
 from src.services.role import allowed_all_roles_access, allowed_admin_moderator
-from fastapi.security import HTTPBearer
-from src.database.models import User
 
 router = APIRouter(prefix='/images', tags=['images'])
 security = HTTPBearer()
-
-
 
 
 @router.get("/all", response_model=Page[ImageResponse],
