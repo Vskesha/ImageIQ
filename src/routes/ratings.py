@@ -15,12 +15,12 @@ from src.services.role import allowed_all_roles_access, allowed_admin_moderator
 
 from src.repository import images as repository_images, ratings as repository_ratings
 
-router = APIRouter(prefix="/rating", tags=["ratings"])
+router = APIRouter(prefix="/ratings", tags=["ratings"])
 security = HTTPBearer()
 
 
 @router.get(
-    "/{image_id}",
+    "/{image_id}/all",
     description=f"Get all ratings for image.\nNo more than 12 requests per minute.",
     dependencies=[
         Depends(allowed_admin_moderator),
@@ -28,7 +28,7 @@ security = HTTPBearer()
     ],
     response_model=List[RatingResponse],
 )
-async def get_ratings(
+async def get_all_ratings(
     image_id: int = Path(ge=1),
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_service.token_manager.get_current_user),
@@ -39,9 +39,34 @@ async def get_ratings(
             status_code=status.HTTP_404_NOT_FOUND, detail=messages.IMAGE_NOT_FOUND
         )
 
-    ratings = await repository_ratings.get_ratings_by_image(image_id, db)
+    ratings = await repository_ratings.get_ratings(image_id, db)
 
     return ratings
+
+
+@router.get(
+    "/{image_id}",
+    description=f"Get average rating of image.\nNo more than 12 requests per minute.",
+    dependencies=[
+        Depends(allowed_all_roles_access),
+        Depends(RateLimiter(times=12, seconds=60)),
+    ],
+    response_model=RatingResponse
+)
+async def get_rating(
+    image_id: int = Path(ge=1),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(auth_service.token_manager.get_current_user),
+) -> RatingResponse:
+    image = await repository_images.get_image(image_id, current_user, db)
+    if image is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=messages.IMAGE_NOT_FOUND
+        )
+
+    average_rating = await repository_ratings.get_average_rating(image_id, db)
+
+    return RatingResponse(rating=average_rating)
 
 
 @router.post(
@@ -68,7 +93,7 @@ async def add_rating(
 
     existing_rating = (
         db.query(Rating)
-        .filter(Rating.image_id == image_id, Rating.user_id == current_user["id"])
+        .filter(Rating.image_id == image_id, Rating.user_id == current_user.id)
         .first()
     )
 
@@ -78,7 +103,7 @@ async def add_rating(
             detail=messages.RATING_ALREADY_EXISTS,
         )
 
-    if image.user_id == current_user["id"]:
+    if image.user_id == current_user.id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=messages.CANNOT_RATE_OWN_IMAGE,
@@ -102,13 +127,13 @@ async def remove_rating(
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_service.token_manager.get_current_user),
 ) -> dict:
-    rating = await repository_ratings.get_rating(rating_id, db)
+    rating = await repository_ratings.get_rating(rating_id, db, current_user)
 
     if rating is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=messages.RATING_NOT_FOUND
         )
 
-    await repository_ratings.remove_rating(rating, db)
+    await repository_ratings.remove_rating(rating_id, db, current_user)
 
     return {"detail": messages.RATING_REMOVED}

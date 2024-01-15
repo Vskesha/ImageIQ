@@ -86,7 +86,7 @@ async def get_average_rating(image_id: int, db: Session) -> float:
     return round(average_rating, 2)
 
 
-async def remove_rating(rating_id: int, user: User, db: Session) -> dict:
+async def remove_rating(rating_id: int, db: Session, user: User) -> dict:
     # Check if the rating exists
     rating = db.query(Rating).filter(Rating.id == rating_id).first()
     if not rating:
