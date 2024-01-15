@@ -13,6 +13,30 @@ class CloudImage:
         secure=True
     )
 
+    filters = {
+        'basic': [
+            {'width': 500, 'height': 500, 'crop': 'fill'},
+            {'effect': 'auto_contrast'},
+            {'brightness': 10},
+        ],
+        'avatar': [
+            {'aspect_ratio': '1.0', 'gravity': 'face', 'width': 500, 'zoom': '1', 'crop': 'thumb'},
+            {'radius': 'max'},
+            {'color': 'brown', 'effect': 'outline'}
+        ],
+        'black_white': [{'effect': 'grayscale'}],
+        'delete_bg': [{'effect': 'bgremoval'}],
+        'cartoonify': [{'effect': 'cartoonify'}],
+        'oil_paint': [{'effect': 'oil_paint:100'}],
+        'vector': [{'effect': 'vectorize:colors:5:corners:40:detail:1.0'}],
+        'sepia': [{'effect': 'sepia:100'}],
+        'outline': [
+            {'width': 200, 'crop': 'scale'},
+            {'color': 'blue', 'effect': 'outline:20:200'},
+            {'color': 'yellow', 'effect': 'outline:15:200'}
+        ]
+    }
+
     @staticmethod
     def generate_name_avatar(email: str):
         """
@@ -76,7 +100,7 @@ class CloudImage:
     @classmethod
     def transformation(cls, image: Image, type):
         old_link = image.link
-        break_point = old_link.find('/upload/') + settings.break_point
+        break_point = old_link.find('/upload/') + 8
         image_name = old_link[break_point:]
         new_link = cloudinary.CloudinaryImage(image_name).build_url(transformation=CloudImage.filters[type.value])
 

@@ -72,6 +72,7 @@ class TokenManager:
     ALGORITHM = settings.algorithm
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
     r = redis.Redis(host=settings.redis_host, port=settings.redis_port, db=0)
+    invalid_tokens = set()
 
     async def create_access_token(self, data: dict, expires_delta: Optional[float] = None):
         """
@@ -119,6 +120,11 @@ class TokenManager:
         encoded_refresh_token = jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
         return encoded_refresh_token
 
+    async def is_token_valid(self, token: str) -> bool:
+        """
+        Перевіряє, чи токен дійсний (не анульований).
+        """
+        return token not in self.invalid_tokens
     async def get_current_user(self, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
         """
         The get_current_user function is a dependency that will be used in the
@@ -136,6 +142,10 @@ class TokenManager:
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+        is_valid_token = await self.is_token_valid(token)
+        if not is_valid_token:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+
         try:
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
             if payload.get("scope") == "access_token":
@@ -147,16 +157,13 @@ class TokenManager:
         except JWTError as e:
             raise credentials_exception
 
-        # user = await repository_users.get_user_by_email(email, db)
-        # if user is None:
-        #     raise credentials_exception
-        # return user
 
         user = self.r.get(f"user:{email}")
         if user is None:
             user = await repository_users.get_user_by_email(email, db)
             if user is None:
                 raise credentials_exception
+
             self.r.set(f"user:{email}", pickle.dumps(user))
             self.r.expire(f"user:{email}", 900)
         else:
@@ -244,6 +251,12 @@ class TokenManager:
 
         return email
 
+    async def invalidate_token(self, token: str) -> None:
+        """
+        Анулює токен, додаючи його до списку анульованих токенів.
+        """
+        self.invalid_tokens.add(token)
+
     async def logout_user(self,
             token: str = Depends(oauth2_scheme),
             db: Session = Depends(get_db)
@@ -251,17 +264,16 @@ class TokenManager:
         try:
             payload = jwt.decode(token, self.SECRET_KEY, self.ALGORITHM)
             email = await self.token_check(payload, token_type='access_token')
+            print("Before invalidation:", self.invalid_tokens)
+            await self.invalidate_token(token)
+            print("After invalidation:", self.invalid_tokens)
         except:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
 
-        now = datetime.timestamp(datetime.now())
-        time_delta = payload['exp'] - now + 300
-        self.r.set(token, 'True')
-        self.r.expire(token, int(time_delta))
+        self.r.expire(token, 2)
         user = await repository_users.get_user_by_email(email, db)
         user.refresh_token = None
         db.commit()
-
 
     async def clear_user_cash(self, user_email) -> None:
         """

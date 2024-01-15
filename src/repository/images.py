@@ -224,39 +224,23 @@ async def update_image(
     return image
 
 
-# async def get_images_by_tag(tag: Tag, sort_direction: SortDirection, db: Session) -> List[Image]:
-#     """
-#     The get_images_by_tag function takes in a tag and a sort direction,
-#     then returns all images associated with that tag.
-#
-#     :param tag: Filter the images by tag
-#     :param sort_direction: Determine whether the images are sorted in ascending or descending order
-#     :param db: Pass the database connection to the function
-#     :return: A list of images, sorted by the created_at field in ascending or descending order
-#     :doc-author: Trelent
-#     """
-#     image_tag = db.query(ImageM2MTag).filter_by(tag_id=tag.id).all()
-#     images_id = [el.image_id for el in image_tag]
-#     order_by_field = desc(Image.created_at) if sort_direction == SortDirection.desc else asc(Image.created_at)
-#     images = db.query(Image).filter(Image.id.in_(images_id)).order_by(order_by_field).all()
-#     if not images:
-#         print(f"No images found for tag '{tag.name}' with sort direction '{sort_direction.value}'")
-#         return []
+async def get_images_by_tag(tag: Tag, sort_direction: SortDirection, db: Session) -> List[Type[Image]]:
+    """
+    The get_images_by_tag function takes in a tag and a sort direction,
+    then returns all images associated with that tag.
 
+    :param tag: Filter the images by tag
+    :param sort_direction: Determine whether the images are sorted in ascending or descending order
+    :param db: Pass the database connection to the function
+    :return: A list of images, sorted by the created_at field in ascending or descending order
+    :doc-author: Trelent
+    """
+    query = db.query(Image).filter(Image.tags.any(Tag.name == tag.name))
 
-# async def get_images_by_user(user_id, sort_direction, db):
-#     """
-#     The get_images_by_user function returns a list of images that are associated with the user_id provided.
-#     The sort_direction parameter is used to determine whether the results should be sorted in ascending or descending order.
-#
-#     :param user_id: Filter the images by user
-#     :param sort_direction: Determine whether the images should be sorted in ascending or descending order
-#     :param db: Pass the database connection to the function
-#     :return: A list of image objects that are associated with a user
-#     :doc-author: Trelent
-#     """
-#     if sort_direction.value == 'desc':
-#         images = db.query(Image).filter_by(user_id=user_id).order_by(desc(Image.created_at)).all()
-#     else:
-#         images = db.query(Image).filter_by(user_id=user_id).order_by(asc(Image.created_at)).all()
-#     return images
+    if sort_direction == SortDirection.asc:
+        query = query.order_by(Image.created_at)
+    else:
+        query = query.order_by(desc(Image.created_at))
+
+    return query.all()
+  
