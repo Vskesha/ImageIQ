@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Type
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
@@ -9,11 +9,8 @@ from src.schemas.images import CommentModel
 
 
 async def add_comment(
-        body: CommentModel,
-        image_id: int,
-        user: User,
-        db: Session
-        ) -> Optional[Comment]:
+    body: CommentModel, image_id: int, user: User, db: Session
+) -> Optional[Comment]:
     """
     The add_comment function creates a new comment for an image.
     Args:
@@ -28,11 +25,7 @@ async def add_comment(
     :return: A comment object
     :doc-author: Trelent
     """
-    comment = Comment(
-        comment=body.comment,
-        user_id=user.id,
-        image_id=image_id
-    )
+    comment = Comment(comment=body.comment, user_id=user.id, image_id=image_id)
     db.add(comment)
     db.commit()
     db.refresh(comment)
@@ -41,11 +34,11 @@ async def add_comment(
 
 
 async def update_comment(
-        comment_id: int,
-        body: CommentModel,
-        user: User,
-        db: Session,
-        ) -> Optional[Comment]:
+    comment_id: int,
+    body: CommentModel,
+    user: User,
+    db: Session,
+) -> Optional[Comment]:
     """
     The update_comment function updates a comment in the database.
     Args:
@@ -62,7 +55,9 @@ async def update_comment(
     :return: The updated comment
     :doc-author: Trelent
     """
-    comment: Optional[Comment] = db.query(Comment).filter_by(id=comment_id, user_id=user.id).first()
+    comment: Optional[Comment] = (
+        db.query(Comment).filter_by(id=comment_id, user_id=user.id).first()
+    )
     if not comment or not body.comment:
         return None
 
@@ -74,11 +69,7 @@ async def update_comment(
     return comment
 
 
-async def remove_comment(
-        comment_id: int,
-        user: User,
-        db: Session
-    ) -> dict:
+async def remove_comment(comment_id: int, user: User, db: Session) -> dict:
     """
     The remove_comment function deletes a comment from the database.
 
@@ -88,15 +79,20 @@ async def remove_comment(
     :return: A dictionary with a message that the comment has been deleted
     :doc-author: Trelent
     """
-    comment: Optional[Comment] = db.query(Comment).filter_by(id=comment_id, user_id=user.id).first()
+    comment: Optional[Comment] = (
+        db.query(Comment).filter_by(id=comment_id, user_id=user.id).first()
+    )
 
     if comment is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.MSC404_COMMENT_NOT_FOUND)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=messages.MSC404_COMMENT_NOT_FOUND,
+        )
 
     db.delete(comment)
     db.commit()
 
-    return {'message': messages.COMMENT_DELETED}
+    return {"message": messages.COMMENT_DELETED}
 
 
 async def get_comments(image_id, db) -> List[Comment]:
@@ -111,7 +107,8 @@ async def get_comments(image_id, db) -> List[Comment]:
     """
     return db.query(Comment).filter_by(image_id=image_id).all()
 
-async def get_comment_by_id(comment_id: int, db: Session) -> Comment:
+
+async def get_comment_by_id(comment_id: int, db: Session) -> Type[Comment]:
     """
     The get_comment_by_id function takes in a comment_id and a database connection,
     and returns the comment associated with the given comment_id.
