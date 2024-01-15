@@ -10,7 +10,7 @@ from fastapi_limiter import FastAPILimiter
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from src.database.db import get_db
-from src.routes import users, auth, images
+from src.routes import users, auth, images, comments
 from starlette.middleware.cors import CORSMiddleware
 from src.conf.config import settings
 from fastapi_pagination import add_pagination
@@ -107,6 +107,7 @@ def healthchecker(db: Session = Depends(get_db)):
 app.include_router(users.router, prefix='/api')
 app.include_router(auth.router, prefix='/api')
 app.include_router(images.router, prefix='/api')
+app.include_router(comments.router, prefix='/api')
 
 
 if __name__ == "__main__":
