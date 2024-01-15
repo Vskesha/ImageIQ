@@ -1,18 +1,17 @@
-from fastapi import Depends, HTTPException, status, APIRouter, Security, BackgroundTasks
-from fastapi.responses import HTMLResponse
+from fastapi import Request, Depends, HTTPException, status, APIRouter, Security, BackgroundTasks
+from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from starlette.templating import _TemplateResponse, Jinja2Templates
-from src.database.db import get_db
-from src.schemas.users import UserModel, UserResponse, TokenModel, RequestEmail
-from src.repository import users as repository_users
-from src.services.auth import auth_service
 from starlette.responses import RedirectResponse
+from starlette.templating import _TemplateResponse, Jinja2Templates
+
 from src.conf import messages
-from fastapi import Request
+from src.database.db import get_db
 from src.database.models import User
+from src.repository import users as repository_users
+from src.schemas.users import UserModel, UserResponse, TokenModel, RequestEmail
+from src.services.auth import auth_service
 from src.services.email import send_email, send_new_password, send_reset_password
-from fastapi.responses import JSONResponse
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 security = HTTPBearer()
