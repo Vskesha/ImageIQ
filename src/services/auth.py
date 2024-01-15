@@ -1,18 +1,20 @@
 import pickle
-import redis as redis
-import secrets
 import string
-
 from datetime import datetime, timedelta
 from typing import Optional
+
+import redis as redis
+import secrets
 from fastapi import Depends, HTTPException, status
-from passlib.context import CryptContext
-from fastapi.security import  OAuth2PasswordBearer
-from sqlalchemy.orm import Session
+from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
+from passlib.context import CryptContext
+from sqlalchemy.orm import Session
+
+from src.conf.config import settings
 from src.database.db import get_db
 from src.repository import users as repository_users
-from src.conf.config import settings
+
 
 class PasswordManager:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -95,9 +97,6 @@ class TokenManager:
         encoded_access_token = jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
         return encoded_access_token
 
-
-
-
     async def create_refresh_token(self, data: dict, expires_delta: Optional[float] = None):
         """
         The create_refresh_token function creates a refresh token for the user.
@@ -157,8 +156,8 @@ class TokenManager:
             user = await repository_users.get_user_by_email(email, db)
             if user is None:
                 raise credentials_exception
-            self.r.set(f"user:{email}", pickle.dumps(user))
-            self.r.expire(f"user:{email}", 900)
+            await self.r.set(f"user:{email}", pickle.dumps(user))
+            await self.r.expire(f"user:{email}", 900)
         else:
             user = pickle.loads(user)
 
@@ -256,8 +255,8 @@ class TokenManager:
 
         now = datetime.timestamp(datetime.now())
         time_delta = payload['exp'] - now + 300
-        self.r.set(token, 'True')
-        self.r.expire(token, int(time_delta))
+        await self.r.set(token, 'True')
+        await self.r.expire(token, int(time_delta))
         user = await repository_users.get_user_by_email(email, db)
         user.refresh_token = None
         db.commit()
@@ -274,11 +273,12 @@ class TokenManager:
         :return: None
         :doc-author: Trelent
         """
-        self.r.delete(user_email)
+        await self.r.delete(user_email)
 
 
 class AuthService:
     password_manager = PasswordManager()
     token_manager = TokenManager()
+
 
 auth_service = AuthService()
