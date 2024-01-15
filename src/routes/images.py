@@ -1,29 +1,25 @@
 from typing import Optional, List
+
 from fastapi import APIRouter, Depends, File, HTTPException, Path, Security, status, UploadFile, Query
+from fastapi.security import HTTPBearer
 from fastapi_limiter.depends import RateLimiter
-from fastapi_pagination import add_pagination, Page, Params
-from fastapi.security import HTTPAuthorizationCredentials
-from starlette.responses import StreamingResponse
+from fastapi_pagination import Page, Params
 from sqlalchemy.orm import Session
-from src.conf.config import settings
+from starlette.responses import StreamingResponse
+
 from src.conf import messages
 from src.database.db import get_db
-from src.database.models import Image, TransformationsType
+from src.database.models import Image, TransformationsType, User
 from src.repository import images as repository_images
 from src.repository import tags as repository_tags
-from src.repository import users as repository_users
 from src.schemas.images import ImageModel, ImageResponse, SortDirection
 from src.schemas.users import MessageResponse
 from src.services.auth import auth_service
 from src.services.cloud_image import CloudImage
 from src.services.role import allowed_all_roles_access, allowed_admin_moderator
-from fastapi.security import HTTPBearer
-from src.database.models import User
 
 router = APIRouter(prefix='/images', tags=['images'])
 security = HTTPBearer()
-
-
 
 
 @router.get("/all", response_model=Page[ImageResponse],
@@ -112,7 +108,7 @@ async def get_image(
         return image
 
 
-@router.post('/transaction/{image_id}',
+@router.post('/transaction/{image_id}/{type}',
             description='Transform image.\nNo more than 12 requests per minute',
             dependencies=[
                  Depends(allowed_all_roles_access),
@@ -149,7 +145,7 @@ async def transform_image(
     transform_image_link = CloudImage.transformation(image, type)
     body = {
         'description': image.description,
-        'links': transform_image_link,
+        'link': transform_image_link,
         'tags': image.tags,
         'type': image.type
     }

@@ -96,21 +96,19 @@ async def create_user(body: UserModel, db: Session):
     db.refresh(new_user)
     return new_user
 
-
-async def update_token(user: UserModel, refresh_token, db: Session):
+async def update_token(user: User, token: str | None, db: Session) -> None:
     """
     The update_token function updates the refresh token for a user.
-        Args:
-            user (UserModel): The UserModel object to update.
-            refresh_token (str): The new refresh token to use for this user.
-            db (Session): A database session object used to commit changes.
-
-    :param user: UserModel: Pass in the user object that is returned from the get_user function
-    :param refresh_token: Update the refresh_token in the database
-    :param db: Session: Access the database
-    :return: The user object
+    Args:
+        user (UserModel): The UserModel object to update.
+        refresh_token (str): The new refresh token to use for this user.
+        db (Session): A database session object used to commit changes.
+        :param user: UserModel: Pass in the user object that is returned from the get_user function
+        :param refresh_token: Update the refresh_token in the database
+        :param db: Session: Access the database
+        :return: The user object
     """
-    user.refresh_token = refresh_token
+    user.refresh_token = token
     db.commit()
 
 

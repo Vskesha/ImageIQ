@@ -1,10 +1,10 @@
 import enum
 from datetime import date
-
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Integer, ForeignKey, DateTime, func, Enum, Boolean, Float, CheckConstraint, UniqueConstraint, Table
-from sqlalchemy.orm import DeclarativeBase
 from typing import List, Optional
+
+from sqlalchemy import (String, Integer, ForeignKey, DateTime, func, Enum, Boolean, 
+                        Float, CheckConstraint, UniqueConstraint)
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
@@ -85,6 +85,7 @@ class Comment(Base):
     image: Mapped[Image] = relationship("Image", backref='comments')
     created_at: Mapped[date] = mapped_column(DateTime, default=func.now())
     updated_at: Mapped[date] = mapped_column(DateTime, default=func.now(), onupdate=func.now())
+
 
 class Rating(Base):
     __tablename__ = 'ratings'
