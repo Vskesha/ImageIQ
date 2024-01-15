@@ -1,9 +1,11 @@
 from typing import Optional, List
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
+
 from src.database.models import Comment, User
-from src.schemas.images import CommentModel
 from src.conf import messages
+from src.schemas.images import CommentModel
 
 
 async def add_comment(
