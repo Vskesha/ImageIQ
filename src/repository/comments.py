@@ -110,3 +110,15 @@ async def get_comments(image_id, db) -> List[Comment]:
     :doc-author: Trelent
     """
     return db.query(Comment).filter_by(image_id=image_id).all()
+
+async def get_comment_by_id(comment_id: int, db: Session) -> Comment:
+    """
+    The get_comment_by_id function takes in a comment_id and a database connection,
+    and returns the comment associated with the given comment_id.
+
+    :param comment_id: Get the comment with a specific comment_id
+    :param db: Query the database for a comment by its unique identifier
+    :return: The comment associated with a particular comment_id
+    :doc-author: Trelent
+    """
+    return db.query(Comment).filter_by(id=comment_id).first()

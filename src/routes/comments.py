@@ -19,6 +19,34 @@ router = APIRouter(prefix='/comment', tags=['comments'])
 security = HTTPBearer()
 
 @router.get(
+    '/{comment_id}',
+    description="Get a specific comment by its ID.\nNo more than 12 requests per minute.",
+    dependencies=[
+        Depends(allowed_all_roles_access),  
+        Depends(RateLimiter(times=12, seconds=60))   
+    ],
+    response_model=CommentResponse
+)
+async def get_comment_by_id(
+    comment_id: int = Path(ge=1),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(auth_service.token_manager.get_current_user)
+) -> Comment:
+    """
+    Get a specific comment by its ID.
+
+    :param comment_id: int: ID of the comment to retrieve
+    :param db: Session: Database session dependency
+    :param current_user: User: Current user dependency
+    :return: Comment: The retrieved comment
+    """
+    db_comment = await repository_comments.get_comment_by_id(db, comment_id)
+    if db_comment is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")
+    return db_comment
+
+
+@router.get(
     '/{image_id}',
     description='Get all comments on image.\nNo more than 12 requests per minute.',
     dependencies=[
