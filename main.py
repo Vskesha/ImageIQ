@@ -1,19 +1,22 @@
-import time
 import os
-import uvicorn
+import time
+
 import redis.asyncio as redis
+import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi_limiter import FastAPILimiter
+from fastapi_pagination import add_pagination
 from sqlalchemy import text
 from sqlalchemy.orm import Session
+
 from src.database.db import get_db
-from src.routes import users, auth, images, ratings
+from src.routes import users, auth, images, comments, ratings
+
 from starlette.middleware.cors import CORSMiddleware
 from src.conf.config import settings
-from fastapi_pagination import add_pagination
 
 app = FastAPI()
 add_pagination(app)
@@ -25,6 +28,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.on_event("startup")
 async def startup():
@@ -61,7 +65,8 @@ app.mount("/src", StaticFiles(directory=os.path.join(os.path.dirname(os.path.abs
 
 
 templates = Jinja2Templates(directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates"))
-# app.mount("/docs", StaticFiles(directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")), name="docs")
+# app.mount("/docs", StaticFiles(directory=os.path.join(os.path.dirname(os.path.abspath(__file__)),
+# "docs")), name="docs")
 
 
 @app.get('/', response_class=HTMLResponse)
@@ -75,7 +80,6 @@ async def main(request: Request):
     :return: A response object, which is a standard asgi response
     """
     return templates.TemplateResponse("index.html", {"request": request, "title": "WEB PROJECT"})
-
 
 
 @app.get("/api/healthchecker")
@@ -107,6 +111,7 @@ def healthchecker(db: Session = Depends(get_db)):
 app.include_router(users.router, prefix='/api')
 app.include_router(auth.router, prefix='/api')
 app.include_router(images.router, prefix='/api')
+app.include_router(comments.router, prefix='/api')
 app.include_router(ratings.router, prefix='/api')
 
 

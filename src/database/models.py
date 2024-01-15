@@ -1,10 +1,10 @@
 import enum
 from datetime import date
-
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Integer, ForeignKey, DateTime, func, Enum, Boolean, Float, CheckConstraint, UniqueConstraint, Table
-from sqlalchemy.orm import DeclarativeBase
 from typing import List, Optional
+
+from sqlalchemy import (String, Integer, ForeignKey, DateTime, func, Enum, Boolean, 
+                        Float, CheckConstraint, UniqueConstraint)
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
