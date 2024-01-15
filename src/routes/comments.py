@@ -18,6 +18,35 @@ from src.services.role import allowed_all_roles_access, allowed_admin_moderator
 router = APIRouter(prefix='/comment', tags=['comments'])
 security = HTTPBearer()
 
+
+@router.get(
+    '/{comment_id}',
+    description="Get a specific comment by its ID.\nNo more than 12 requests per minute.",
+    dependencies=[
+        Depends(allowed_all_roles_access),  
+        Depends(RateLimiter(times=12, seconds=60))   
+    ],
+    response_model=CommentResponse
+)
+async def get_comment_by_id(
+    comment_id: int = Path(ge=1),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(auth_service.token_manager.get_current_user)
+) -> Comment:
+    """
+    Get a specific comment by its ID.
+
+    :param comment_id: int: ID of the comment to retrieve
+    :param db: Session: Database session dependency
+    :param current_user: User: Current user dependency
+    :return: Comment: The retrieved comment
+    """
+    db_comment = await repository_comments.get_comment_by_id(comment_id, db)
+    if db_comment is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")
+    return db_comment
+
+
 @router.get(
     '/{image_id}',
     description='Get all comments on image.\nNo more than 12 requests per minute.',
@@ -39,7 +68,6 @@ async def get_comments_by_image_id(
     :param image_id: int: Get the comments of a specific image
     :param db: Session: Get the database session
     :param current_user: dict: Get the current user's information
-    :param credentials: HTTPAuthorizationCredentials: Validate the token
     :return: The comments associated with the image
     :doc-author: Trelent
     """
@@ -48,6 +76,7 @@ async def get_comments_by_image_id(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.MSC404_IMAGE_NOT_FOUND)
 
     return await repository_comments.get_comments(image_id, db)
+
 
 @router.post(
     '/{image_id}',
@@ -76,7 +105,6 @@ async def add_comment(
     :param image_id: int: Get the image_id from the url
     :param db: Session: Get the database session
     :param current_user: dict: Get the current user from the database
-    :param credentials: HTTPAuthorizationCredentials: Validate the token
     :return: The created comment
     :doc-author: Trelent
     """
@@ -112,7 +140,6 @@ async def update_comment(
     :param comment_id: int: Get the comment id of the comment to be deleted
     :param db: Session: Get the database session
     :param current_user: dict: Get the user information from authuser
-    :param credentials: HTTPAuthorizationCredentials: Check the token
     :return: A comment object
     :doc-author: Trelent
     """
@@ -146,7 +173,6 @@ async def remove_comment(
     :param comment_id: int: Get the comment id from the path
     :param db: Session: Pass the database session to the function
     :param current_user: dict: Get the current user information
-    :param credentials: HTTPAuthorizationCredentials: Authenticate the user
     :return: A dict with the message key and value
     :doc-author: Trelent
     """
