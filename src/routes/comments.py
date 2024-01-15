@@ -1,19 +1,18 @@
 from typing import Optional, List
+
 from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi.security import HTTPBearer
 from fastapi_limiter.depends import RateLimiter
 from sqlalchemy.orm import Session
-from src.schemas.users import MessageResponse
-from src.conf.config import settings
+
 from src.conf import messages
 from src.database.db import get_db
-from src.database.models import Comment
-from src.repository import images as repository_images
-from src.repository import comments as repository_comments
+from src.database.models import Comment, User
+from src.repository import comments as repository_comments, images as repository_images
 from src.schemas.images import CommentModel, CommentResponse
-from src.services.role import allowed_all_roles_access, allowed_admin_moderator
-from fastapi.security import HTTPBearer
-from src.database.models import User
+from src.schemas.users import MessageResponse
 from src.services.auth import auth_service
+from src.services.role import allowed_all_roles_access, allowed_admin_moderator
 
 
 router = APIRouter(prefix='/comment', tags=['comments'])
