@@ -1,6 +1,6 @@
 from typing import Optional, List
 
-from fastapi import APIRouter, Depends, File, HTTPException, Path, Security, status, UploadFile, Query
+from fastapi import APIRouter, Depends, File, HTTPException, Path, status, UploadFile
 from fastapi.security import HTTPBearer
 from fastapi_limiter.depends import RateLimiter
 from fastapi_pagination import Page, Params
@@ -28,7 +28,7 @@ security = HTTPBearer()
                           Depends(allowed_admin_moderator),
                           Depends(RateLimiter(times=12, seconds=60))
                           ],
-            summary="Get all contacts if you are admin or moderator "
+            summary="Get all images if you are admin or moderator"
             )
 async def get_images_all(
                  db: Session = Depends(get_db),
@@ -42,7 +42,6 @@ async def get_images_all(
         :param db: Session: Pass the database session to the repository layer
         :param pagination_params: Params: Get the pagination parameters from the request
         :return: A list of images
-        :doc-author: Trelent
         """
         images = await repository_images.get_images_all(db, pagination_params)
         return images
@@ -71,7 +70,6 @@ async def get_images_by_user(
         :param current_user: User: Get the current user from the database
         :param pagination_params: Params: Get the pagination parameters from the request
         :return: A page object, which is a list of imageresponse objects
-        :doc-author: Trelent
         """
         images = await repository_images.get_images_by_user(db, current_user, pagination_params)
         return images
@@ -98,9 +96,7 @@ async def get_image(
         :param image_id: int: Get the image id from the path
         :param db: Session: Get the database session
         :param current_user: dict: Get the current user from the database
-        :param credentials: HTTPAuthorizationCredentials: Validate the token
         :return: The image object
-        :doc-author: Trelent
         """
         image = await repository_images.get_image(image_id, current_user, db)
         if image is None:
@@ -132,9 +128,7 @@ async def transform_image(
     :param image_id: int: Get the image from the database
     :param db: Session: Get the database session
     :param current_user: dict: Get the current user from the database
-    :param credentials: HTTPAuthorizationCredentials: Validate the jwt token
     :return: A new image with the transformation applied
-    :doc-author: Trelent
     """
     image = await repository_images.get_image(image_id, current_user, db)
     if image is None:
@@ -175,9 +169,7 @@ async def image_qry(
         :param image_id: int: Get the image id from the url
         :param db: Session: Get the database session
         :param current_user: dict: Get the current user from the token
-        :param credentials: HTTPAuthorizationCredentials: Validate the user's token
         :return: A qr code image of the given image
-        :doc-author: Trelent
         """
         image = await repository_images.get_image(image_id, current_user, db)
         if image is None:
@@ -211,9 +203,7 @@ async def create_image(
         :param file: UploadFile: Get the file from the request
         :param db: Session: Get a database session
         :param current_user: dict: Get the current user
-        :param credentials: HTTPAuthorizationCredentials: Validate the token
         :return: A new image
-        :doc-author: Trelent
         """
         public_id = CloudImage.generate_name_image(current_user.email, file.filename)
         r = CloudImage.image_upload(file.file, public_id)
@@ -249,9 +239,7 @@ async def remove_image(
         :param image_id: int: Get the image id from the path
         :param db: Session: Pass the database session to the repository
         :param current_user: dict: Get the current user from the database
-        :param credentials: HTTPAuthorizationCredentials: Validate the user's token
         :return: A dictionary with a message
-        :doc-Author: Trelent
         """
         message = await repository_images.remove_image(image_id, current_user, db)
         if message is None:
@@ -284,9 +272,7 @@ async def update_image(
         :param image_id: int: Get the image id from the url
         :param db: Session: Get the database session
         :param current_user: dict: Get the current user
-        :param credentials: HTTPAuthorizationCredentials: Check the authorization header
         :return: An image object
-        :doc-author: Trelent
         """
         image = await repository_images.update_image(image_id, body, current_user, db, 5)
         if image is None:
@@ -315,15 +301,14 @@ async def get_image_by_tag_name(
         The function takes three parameters:
             - tag_name: The name of the tag to search for. This is a required parameter and must be passed as part of
                         the URL path (e.g., /images/tags/{tag_name}). It is also validated by FastAPI to ensure it meets
-                        certain criteria, such as being at least one character long and not exceeding 100 characters in length.
+                        certain criteria, such as being at least one character long and not exceeding 100 characters
+                        in length.
 
         :param tag_name: str: Get the tag from the database
         :param sort_direction: SortDirection: Specify the sort direction of the images
         :param db: Session: Pass the database session to the function
         :param current_user: dict: Get the current user from the token manager
-        :param credentials: HTTPAuthorizationCredentials: Validate the jwt token
         :return: A list of images
-        :doc-author: Trelent
         """
         tag = await repository_tags.get_tag_by_name(tag_name, db)
         if tag is None:
@@ -334,7 +319,6 @@ async def get_image_by_tag_name(
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.MSC404_IMAGE_NOT_FOUND)
 
         return images
-
 
 
 # @router.get(
@@ -357,16 +341,15 @@ async def get_image_by_tag_name(
 #         """
 #         The get_image_by_user function returns a list of images that belong to the user with the given id.
 #         The function takes in an integer representing the user's id, and a SortDirection enum value indicating whether
-#         the returned list should be sorted by date ascending or descending. The function also takes in an optional db Session object,
-#         a current_user dict containing information about the currently logged-in user (if any), and credentials for HTTP Basic Authentication.
+#         the returned list should be sorted by date ascending or descending. The function also takes in an
+#         optional db Session object, a current_user dict containing information about the currently logged-in
+#         user (if any), and credentials for HTTP Basic Authentication.
 #
 #         :param user_id: int: Get the user id from the url
 #         :param sort_direction: SortDirection: Determine the order in which the images are returned
 #         :param db: Session: Access the database
 #         :param current_user: dict: Get the current user from the token
-#         :param credentials: HTTPAuthorizationCredentials: Authenticate the user
 #         :return: A list of images
-#         :doc-author: Trelent
 #         """
 #         user = await repository_users.get_user_by_id(user_id, db)
 #         if user is None:
