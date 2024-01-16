@@ -69,7 +69,6 @@ async def get_comments_by_image_id(
     :param db: Session: Get the database session
     :param current_user: dict: Get the current user's information
     :return: The comments associated with the image
-    :doc-author: Trelent
     """
     image = await repository_images.get_image(image_id, current_user, db)
     if image is None:
@@ -106,7 +105,6 @@ async def add_comment(
     :param db: Session: Get the database session
     :param current_user: dict: Get the current user from the database
     :return: The created comment
-    :doc-author: Trelent
     """
     image = await repository_images.get_image(image_id, current_user, db)
     if image is None:
@@ -141,7 +139,6 @@ async def update_comment(
     :param db: Session: Get the database session
     :param current_user: dict: Get the user information from authuser
     :return: A comment object
-    :doc-author: Trelent
     """
     comment = await repository_comments.update_comment(comment_id, body, current_user, db)
     if comment is None:
@@ -174,7 +171,6 @@ async def remove_comment(
     :param db: Session: Pass the database session to the function
     :param current_user: dict: Get the current user information
     :return: A dict with the message key and value
-    :doc-author: Trelent
     """
     message = await repository_comments.remove_comment(comment_id, current_user, db)
 
