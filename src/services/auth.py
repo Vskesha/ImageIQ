@@ -162,8 +162,8 @@ class TokenManager:
             user = await repository_users.get_user_by_email(email, db)
             if user is None:
                 raise credentials_exception
-            await self.r.set(f"user:{email}", pickle.dumps(user))
-            await self.r.expire(f"user:{email}", 900)
+            self.r.set(f"user:{email}", pickle.dumps(user))
+            self.r.expire(f"user:{email}", 900)
 
         else:
             user = pickle.loads(user)
@@ -271,8 +271,8 @@ class TokenManager:
 
         now = datetime.timestamp(datetime.now())
         time_delta = payload['exp'] - now + 300
-        await self.r.set(token, 'True')
-        await self.r.expire(token, int(time_delta))
+        self.r.set(token, 'True')
+        self.r.expire(token, int(time_delta))
 
         user = await repository_users.get_user_by_email(email, db)
         user.refresh_token = None
@@ -289,7 +289,7 @@ class TokenManager:
         :return: None
         :doc-author: Trelent
         """
-        await self.r.delete(user_email)
+        self.r.delete(user_email)
 
 
 class AuthService:
