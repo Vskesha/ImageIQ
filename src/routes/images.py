@@ -28,7 +28,7 @@ security = HTTPBearer()
                           Depends(allowed_admin_moderator),
                           Depends(RateLimiter(times=12, seconds=60))
                           ],
-            summary="Get all contacts if you are admin or moderator "
+            summary="Get all images if you are admin or moderator"
             )
 async def get_images_all(
                  db: Session = Depends(get_db),
