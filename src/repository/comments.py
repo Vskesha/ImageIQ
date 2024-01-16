@@ -23,7 +23,6 @@ async def add_comment(
     :param user: dict: Get the user id from the token
     :param db: Session: Access the database
     :return: A comment object
-    :doc-author: Trelent
     """
     comment = Comment(comment=body.comment, user_id=user.id, image_id=image_id)
     db.add(comment)
@@ -53,7 +52,6 @@ async def update_comment(
     :param db: Session: Access the database
     :param : Get the comment id
     :return: The updated comment
-    :doc-author: Trelent
     """
     comment: Optional[Comment] = (
         db.query(Comment).filter_by(id=comment_id, user_id=user.id).first()
@@ -77,7 +75,6 @@ async def remove_comment(comment_id: int, user: User, db: Session) -> dict:
     :param user: User: Check if the user is authorized to delete a comment
     :param db: Session: Access the database
     :return: A dictionary with a message that the comment has been deleted
-    :doc-author: Trelent
     """
     comment: Optional[Comment] = (
         db.query(Comment).filter_by(id=comment_id, user_id=user.id).first()
@@ -103,7 +100,6 @@ async def get_comments(image_id, db) -> List[Comment]:
     :param image_id: Filter the comments by image_id
     :param db: Query the database for comments that are associated with a specific image
     :return: All comments associated with a particular image
-    :doc-author: Trelent
     """
     return db.query(Comment).filter_by(image_id=image_id).all()
 
@@ -116,6 +112,5 @@ async def get_comment_by_id(comment_id: int, db: Session) -> Type[Comment]:
     :param comment_id: Get the comment with a specific comment_id
     :param db: Query the database for a comment by its unique identifier
     :return: The comment associated with a particular comment_id
-    :doc-author: Trelent
     """
     return db.query(Comment).filter_by(id=comment_id).first()
