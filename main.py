@@ -99,7 +99,7 @@ def healthchecker(db: Session = Depends(get_db)):
             raise HTTPException(
                 status_code=500, detail="Database is not configured correctly"
             )
-        return {"message": "Welcome to FastAPI on Howe Work 11!"}
+        return {"message": "Welcome to project ImageIQ built on FastAPI"}
     except Exception as e:
         print(e)
         raise HTTPException(
