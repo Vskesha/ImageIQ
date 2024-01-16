@@ -128,7 +128,7 @@ async def confirmed_email(token: str, db: Session = Depends(get_db)):
 
 @router.post("/request_email", response_class=JSONResponse)
 async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, request: Request,
-                        db: Session = Depends(get_db)):
+                        db: Session = Depends(get_db)) -> JSONResponse:
     """
     The request_email function is used to send an email to the user with a link that will allow them
     to confirm their account. The function takes in a RequestEmail object, which contains the email of
