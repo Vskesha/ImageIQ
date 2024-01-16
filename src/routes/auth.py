@@ -149,16 +149,16 @@ async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, r
     return JSONResponse(content={'message': messages.MSC401_EMAIL_UNKNOWN})
 
 
-@router.get("/email-confirm/complate", response_class=HTMLResponse, description="Request password reset Page")
-async def email_confirm_complite(request: Request) -> _TemplateResponse:
+@router.get("/email-confirm/complete", response_class=HTMLResponse, description="Request password reset Page")
+async def email_confirm_complete(request: Request) -> _TemplateResponse:
     """
-    The email_confirm_complite function is used to confirm the email address of a user.
+    The email_confirm_complete function is used to confirm the email address of a user.
         It takes in a request object and returns an HTML template response with the title &quot;Email Confirmation Complete&quot;.
     :param request: Request: Get the request object
     :return: A message that the password has been sent to your email
     :doc-author: Trelent
     """
-    return templates.TemplateResponse("email_confirm_сomplate.html", {"request": request,
+    return templates.TemplateResponse("email_confirm_complete.html", {"request": request,
                                                                       "title": messages.MSG_SENT_PASSWORD})
 
 @router.get("/email-confirm/done", response_class=HTMLResponse, description="Request password reset Page")
