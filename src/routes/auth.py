@@ -176,9 +176,9 @@ async def email_confirm_done(request: Request) -> _TemplateResponse:
                                                                   "title": messages.MSG_SENT_PASSWORD})
 
 
-@router.get("/reset-password/confirm/{token}", response_class=JSONResponse, status_code=status.HTTP_303_SEE_OTHER)
+@router.get("/reset-password/confirm/{token}", response_class=HTMLResponse, status_code=status.HTTP_303_SEE_OTHER)
 async def reset_password_confirm(token: str, background_tasks: BackgroundTasks, request: Request,
-                                 db: Session = Depends(get_db)) -> JSONResponse:
+                                 db: Session = Depends(get_db)) -> HTMLResponse:
     """
     The reset_password_confirm function is used to reset a user's password.
         It takes the token from the URL and uses it to get the email of the user who requested a password reset.
@@ -213,8 +213,7 @@ async def reset_password_confirm(token: str, background_tasks: BackgroundTasks, 
                               new_password)
 
     # response_data = {"token": token, "username": updated_user.username}
-    return JSONResponse(content={'message': "New temporary password sent to your email"},
-                        status_code=status.HTTP_205_RESET_CONTENT)
+    return templates.TemplateResponse("password_reset_email_confirmed.html", {"request": request})
 
 
 @router.post("/reset-password")
