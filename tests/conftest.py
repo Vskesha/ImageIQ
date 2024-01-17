@@ -47,11 +47,22 @@ def admin():
 @pytest.fixture(scope='module')
 def user():
     return {
-        'id': 2,
+        'id': 3,
         'username': 'user',
         'email': 'example2@example.com',
         'password': 'Qwerty@1',
         'roles': 'user',
+        'status_active': 'true',
+    }
+
+@pytest.fixture(scope='module')
+def moderator():
+    return {
+        'id': 2,
+        'username': 'moderator',
+        'email': 'example2@example.com',
+        'password': 'Qwerty@1',
+        'roles': 'moderator',
         'status_active': 'true',
     }
 
