@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Type
 
 from fastapi import APIRouter, Depends, Path, HTTPException, status
 from fastapi.security import HTTPBearer
@@ -32,7 +32,7 @@ async def get_all_ratings(
     image_id: int = Path(ge=1),
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_service.token_manager.get_current_user),
-) -> List[RatingResponse]:
+) -> List[Type[Rating]]:
     image = await repository_images.get_image(image_id, current_user, db)
     if image is None:
         raise HTTPException(
@@ -83,7 +83,7 @@ async def add_rating(
     image_id: int = Path(ge=1),
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_service.token_manager.get_current_user),
-) -> RatingResponse:
+) -> Rating:
     image = await repository_images.get_image(image_id, current_user, db)
 
     if image is None:

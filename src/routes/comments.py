@@ -32,7 +32,7 @@ async def get_comment_by_id(
     comment_id: int = Path(ge=1),
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_service.token_manager.get_current_user),
-) -> Comment:
+) -> Type[Comment]:
     """
     Get a specific comment by its ID.
 
