@@ -1,10 +1,13 @@
 import enum
 from datetime import date
-from typing import List, Optional
+from typing import List
 
-from sqlalchemy import (String, Integer, ForeignKey, DateTime, func, Enum, Boolean, 
-                        Float, CheckConstraint, UniqueConstraint)
+from sqlalchemy import (String, Integer, ForeignKey, DateTime, func, Enum, Boolean,
+                        Float, CheckConstraint, UniqueConstraint, select)
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
+from src.database.db import get_db
 
 
 class Base(DeclarativeBase):
@@ -70,9 +73,17 @@ class Image(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=True)
     user: Mapped[User] = relationship("User", backref='images')
     tags: Mapped[List[Tag]] = relationship("Tag", secondary="image_m2m_tag", backref='images')
-    rating: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     created_at: Mapped[date] = mapped_column(DateTime, default=func.now())
     updated_at: Mapped[date] = mapped_column(DateTime, default=func.now(), onupdate=func.now())
+
+    @hybrid_property
+    def rating(self):
+        avg_rating_query = (select([func.avg(Rating.rating)])
+                            .where(Rating.image_id == self.id)
+                            .group_by(Rating.image_id))
+        session = get_db()
+        avg_rating = session.execute(avg_rating_query).scalar()
+        return avg_rating or 0.0
 
 
 class Comment(Base):
