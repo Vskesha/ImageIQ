@@ -47,6 +47,10 @@ class CommentModel(BaseModel):
 
 class CommentResponse(CommentModel):
     id: int
+    comment: str = Field(max_length=2000)
+    user_id: int
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True

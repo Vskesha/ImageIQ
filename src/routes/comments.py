@@ -9,7 +9,7 @@ from src.conf import messages
 from src.database.db import get_db
 from src.database.models import Comment, User
 from src.repository import comments as repository_comments, images as repository_images
-from src.schemas.images import CommentModel, CommentResponse
+from src.schemas.images import CommentModel, CommentResponse, SortDirection
 from src.schemas.users import MessageResponse
 from src.services.auth import auth_service
 from src.services.role import allowed_all_roles_access, allowed_admin_moderator
@@ -60,6 +60,7 @@ async def get_comment_by_id(
 )
 async def get_comments_by_image_id(
     image_id: int = Path(ge=1),
+    sort_direction: SortDirection = SortDirection.desc,
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_service.token_manager.get_current_user),
 ) -> List[Type[Comment]]:
@@ -68,6 +69,7 @@ async def get_comments_by_image_id(
 
     :param image_id: int: Get the comments of a specific image
     :param db: Session: Get the database session
+    :param sort_direction: Sort the comments in ascending or descending order
     :param current_user: dict: Get the current user's information
     :return: The comments associated with the image
     """
@@ -77,7 +79,7 @@ async def get_comments_by_image_id(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=messages.MSC404_IMAGE_NOT_FOUND,
         )
-    comments = await repository_comments.get_comments_by_image(image_id, db)
+    comments = await repository_comments.get_comments_by_image(image_id, sort_direction, db)
     return comments
 
 
