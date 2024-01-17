@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Type
 
 from fastapi import APIRouter, Depends, HTTPException, Path, status
 from fastapi.security import HTTPBearer
@@ -15,23 +15,23 @@ from src.services.auth import auth_service
 from src.services.role import allowed_all_roles_access, allowed_admin_moderator
 
 
-router = APIRouter(prefix='/comment', tags=['comments'])
+router = APIRouter(prefix="/comment", tags=["comments"])
 security = HTTPBearer()
 
 
 @router.get(
-    '/{comment_id}',
+    "/{comment_id}",
     description="Get a specific comment by its ID.\nNo more than 12 requests per minute.",
     dependencies=[
-        Depends(allowed_all_roles_access),  
-        Depends(RateLimiter(times=12, seconds=60))   
+        Depends(allowed_all_roles_access),
+        Depends(RateLimiter(times=12, seconds=60)),
     ],
-    response_model=CommentResponse
+    response_model=CommentResponse,
 )
 async def get_comment_by_id(
     comment_id: int = Path(ge=1),
     db: Session = Depends(get_db),
-    current_user: User = Depends(auth_service.token_manager.get_current_user)
+    current_user: User = Depends(auth_service.token_manager.get_current_user),
 ) -> Comment:
     """
     Get a specific comment by its ID.
@@ -43,25 +43,26 @@ async def get_comment_by_id(
     """
     db_comment = await repository_comments.get_comment_by_id(comment_id, db)
     if db_comment is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Comment not found"
+        )
     return db_comment
 
 
 @router.get(
-    '/image/{image_id}',
-    description='Get all comments on image.\nNo more than 12 requests per minute.',
+    "/image/{image_id}",
+    description="Get all comments on image.\nNo more than 12 requests per minute.",
     dependencies=[
         Depends(allowed_all_roles_access),
-        Depends(RateLimiter(times=12, seconds=60))
+        Depends(RateLimiter(times=12, seconds=60)),
     ],
     response_model=List[CommentResponse],
 )
 async def get_comments_by_image_id(
-        image_id: int = Path(ge=1),
-        db: Session = Depends(get_db),
-        current_user: User = Depends(auth_service.token_manager.get_current_user)
-        ) -> List[Type[Comment]]:
-
+    image_id: int = Path(ge=1),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(auth_service.token_manager.get_current_user),
+) -> List[Type[Comment]]:
     """
     The get_comments_by_image_id function returns a list of comments for the image with the given id.
 
@@ -72,27 +73,29 @@ async def get_comments_by_image_id(
     """
     image = await repository_images.get_image(image_id, current_user, db)
     if image is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.MSC404_IMAGE_NOT_FOUND)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=messages.MSC404_IMAGE_NOT_FOUND,
+        )
     comments = await repository_comments.get_comments_by_image(image_id, db)
     return comments
 
 
 @router.post(
-    '/{image_id}',
-    description='Add comment.\nNo more than 12 requests per minute.',
+    "/{image_id}",
+    description="Add comment.\nNo more than 12 requests per minute.",
     dependencies=[
         Depends(allowed_all_roles_access),
-        Depends(RateLimiter(times=12, seconds=60))
+        Depends(RateLimiter(times=12, seconds=60)),
     ],
     response_model=CommentResponse,
 )
 async def add_comment(
-        body: CommentModel,
-        image_id: int = Path(ge=1),
-        db: Session = Depends(get_db),
-        current_user: User = Depends(auth_service.token_manager.get_current_user)
+    body: CommentModel,
+    image_id: int = Path(ge=1),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(auth_service.token_manager.get_current_user),
 ) -> Optional[Comment]:
-
     """
     The add_comment function creates a new comment for an image.
     The function takes in the following parameters:
@@ -108,27 +111,29 @@ async def add_comment(
     """
     image = await repository_images.get_image(image_id, current_user, db)
     if image is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.MSC404_IMAGE_NOT_FOUND)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=messages.MSC404_IMAGE_NOT_FOUND,
+        )
     comment = await repository_comments.add_comment(body, image_id, current_user, db)
     return comment
 
 
 @router.put(
-            '/{comment_id}',
-            description='Update comment.\nNo more than 12 requests per minute.',
-            dependencies=[
-                Depends(allowed_all_roles_access),
-                Depends(RateLimiter(times=12, seconds=60))
-            ],
-            response_model=CommentResponse,
-             )
+    "/{comment_id}",
+    description="Update comment.\nNo more than 12 requests per minute.",
+    dependencies=[
+        Depends(allowed_all_roles_access),
+        Depends(RateLimiter(times=12, seconds=60)),
+    ],
+    response_model=CommentResponse,
+)
 async def update_comment(
-                         body: CommentModel,
-                         comment_id: int = Path(ge=1),
-                         db: Session = Depends(get_db),
-                         current_user: User = Depends(auth_service.token_manager.get_current_user)
-                         ) -> Comment:
-
+    body: CommentModel,
+    comment_id: int = Path(ge=1),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(auth_service.token_manager.get_current_user),
+) -> Comment:
     """
     The update_comment function updates a comment in the database.
     The function takes an id, body and current_user as parameters.
@@ -140,28 +145,32 @@ async def update_comment(
     :param current_user: dict: Get the user information from authuser
     :return: A comment object
     """
-    comment = await repository_comments.update_comment(comment_id, body, current_user, db)
+    comment = await repository_comments.update_comment(
+        comment_id, body, current_user, db
+    )
     if comment is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.MSC404_COMMENT_NOT_FOUND)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=messages.MSC404_COMMENT_NOT_FOUND,
+        )
 
     return comment
 
 
 @router.delete(
-               '/{comment_id}',
-               description='Delete comment.\nNo more than 12 requests per minute.',
-               dependencies=[
-                             Depends(allowed_admin_moderator),
-                             Depends(RateLimiter(times=12, seconds=60))
-                             ],
-               response_model=MessageResponse
-               )
+    "/{comment_id}",
+    description="Delete comment.\nNo more than 12 requests per minute.",
+    dependencies=[
+        Depends(allowed_admin_moderator),
+        Depends(RateLimiter(times=12, seconds=60)),
+    ],
+    response_model=MessageResponse,
+)
 async def remove_comment(
-                         comment_id: int = Path(ge=1),
-                         db: Session = Depends(get_db),
-                         current_user: User = Depends(auth_service.token_manager.get_current_user)
-                         ) -> dict:
-
+    comment_id: int = Path(ge=1),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(auth_service.token_manager.get_current_user),
+) -> dict:
     """
     The remove_comment function removes a comment from the database.
     The function takes in an integer representing the id of the comment to be removed,
