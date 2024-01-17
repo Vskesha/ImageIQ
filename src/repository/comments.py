@@ -83,7 +83,7 @@ async def remove_comment(comment_id: int, user: User, db: Session) -> dict:
     :return: A dictionary with a message that the comment has been deleted
     """
     comment: Optional[Comment] = (
-        db.query(Comment).filter_by(id=comment_id, user_id=user.id).first()
+        db.query(Comment).filter_by(id=comment_id).first()
     )
 
     if comment is None:
