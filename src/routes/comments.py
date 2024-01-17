@@ -121,7 +121,7 @@ async def add_comment(
     return comment
 
 
-@router.put(
+@router.patch(
     "/{comment_id}",
     description="Update comment.\nNo more than 12 requests per minute.",
     dependencies=[

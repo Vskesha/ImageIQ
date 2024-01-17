@@ -54,11 +54,16 @@ async def update_comment(
     :param : Get the comment id
     :return: The updated comment
     """
-    comment: Optional[Comment] = (
-        db.query(Comment).filter_by(id=comment_id, user_id=user.id).first()
-    )
+    comment: Optional[Comment] = db.query(Comment).filter_by(id=comment_id).first()
+
     if not comment or not body.comment:
         return None
+
+    if comment.user_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=messages.NOT_ALLOWED,
+        )
 
     comment.comment = body.comment
     db.add(comment)
