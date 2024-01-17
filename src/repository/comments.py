@@ -1,11 +1,12 @@
 from typing import Optional, List, Type
 
 from fastapi import HTTPException, status
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from src.database.models import Comment, User
 from src.conf import messages
-from src.schemas.images import CommentModel
+from src.schemas.images import CommentModel, SortDirection
 
 
 async def add_comment(
@@ -115,16 +116,23 @@ async def get_comment_by_id(comment_id: int, db: Session) -> Type[Comment]:
     """
     return db.query(Comment).filter_by(id=comment_id).first()
 
-async def get_comments_by_image(image_id: int, db: Session) -> List[Type[Comment]]:
+
+async def get_comments_by_image(image_id: int, sort_direction: SortDirection, db: Session) -> List[Type[Comment]]:
     """
     The get_comments_by_image function returns a list of comments for the image with the given id.
         Args:
             image_id (int): The id of an image in the database.
             db (Session): A database session object to query from.
     :param image_id: int: Filter the comments by image id
+    :param sort_direction: SortDirection: The sort direction of the comments
     :param db: Session: Pass the database session into the function
     :return: A list of comments that are associated with a specific image
     :doc-author: Trelent
     """
-    comments = db.query(Comment).filter_by(image_id=image_id).all()
+    query = db.query(Comment).filter_by(image_id=image_id)
+    if sort_direction == SortDirection.desc:
+        comments = query.order_by(desc(Comment.id)).all()
+    else:
+        comments = query.order_by(Comment.id).all()
+
     return comments
