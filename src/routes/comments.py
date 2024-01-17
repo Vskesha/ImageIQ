@@ -48,7 +48,7 @@ async def get_comment_by_id(
 
 
 @router.get(
-    '/{image_id}',
+    '/image/{image_id}',
     description='Get all comments on image.\nNo more than 12 requests per minute.',
     dependencies=[
         Depends(allowed_all_roles_access),
@@ -60,7 +60,7 @@ async def get_comments_by_image_id(
         image_id: int = Path(ge=1),
         db: Session = Depends(get_db),
         current_user: User = Depends(auth_service.token_manager.get_current_user)
-        ) -> List[Comment]:
+        ) -> List[Type[Comment]]:
 
     """
     The get_comments_by_image_id function returns a list of comments for the image with the given id.
@@ -73,8 +73,8 @@ async def get_comments_by_image_id(
     image = await repository_images.get_image(image_id, current_user, db)
     if image is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.MSC404_IMAGE_NOT_FOUND)
-
-    return await repository_comments.get_comments(image_id, db)
+    comments = await repository_comments.get_comments_by_image(image_id, db)
+    return comments
 
 
 @router.post(
