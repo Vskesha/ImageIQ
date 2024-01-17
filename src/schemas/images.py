@@ -60,6 +60,10 @@ class RatingModel(BaseModel):
     rating: Optional[float] = Field(ge=1, le=5)
 
 
+class AverageRatingResponse(RatingModel):
+    rating: Optional[float] = Field(ge=1, le=5)
+
+
 class RatingResponse(RatingModel):
     id: int
     rating: Optional[float] = Field(ge=1, le=5)
