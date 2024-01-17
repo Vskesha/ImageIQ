@@ -114,3 +114,17 @@ async def get_comment_by_id(comment_id: int, db: Session) -> Type[Comment]:
     :return: The comment associated with a particular comment_id
     """
     return db.query(Comment).filter_by(id=comment_id).first()
+
+async def get_comments_by_image(image_id: int, db: Session) -> List[Type[Comment]]:
+    """
+    The get_comments_by_image function returns a list of comments for the image with the given id.
+        Args:
+            image_id (int): The id of an image in the database.
+            db (Session): A database session object to query from.
+    :param image_id: int: Filter the comments by image id
+    :param db: Session: Pass the database session into the function
+    :return: A list of comments that are associated with a specific image
+    :doc-author: Trelent
+    """
+    comments = db.query(Comment).filter_by(image_id=image_id).all()
+    return comments
