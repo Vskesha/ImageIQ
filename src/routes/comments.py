@@ -23,8 +23,8 @@ security = HTTPBearer()
     '/{comment_id}',
     description="Get a specific comment by its ID.\nNo more than 12 requests per minute.",
     dependencies=[
-        Depends(allowed_all_roles_access),  
-        Depends(RateLimiter(times=12, seconds=60))   
+        Depends(allowed_all_roles_access),
+        Depends(RateLimiter(times=12, seconds=60))
     ],
     response_model=CommentResponse
 )
@@ -48,7 +48,7 @@ async def get_comment_by_id(
 
 
 @router.get(
-    '/{image_id}',
+    '/image/{image_id}',
     description='Get all comments on image.\nNo more than 12 requests per minute.',
     dependencies=[
         Depends(allowed_all_roles_access),
@@ -69,13 +69,12 @@ async def get_comments_by_image_id(
     :param db: Session: Get the database session
     :param current_user: dict: Get the current user's information
     :return: The comments associated with the image
-    :doc-author: Trelent
     """
     image = await repository_images.get_image(image_id, current_user, db)
     if image is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.MSC404_IMAGE_NOT_FOUND)
 
-    return await repository_comments.get_comments(image_id, db)
+    return await repository_comments.get_comments_by_image(image_id, db)
 
 
 @router.post(
@@ -106,7 +105,6 @@ async def add_comment(
     :param db: Session: Get the database session
     :param current_user: dict: Get the current user from the database
     :return: The created comment
-    :doc-author: Trelent
     """
     image = await repository_images.get_image(image_id, current_user, db)
     if image is None:
@@ -141,7 +139,6 @@ async def update_comment(
     :param db: Session: Get the database session
     :param current_user: dict: Get the user information from authuser
     :return: A comment object
-    :doc-author: Trelent
     """
     comment = await repository_comments.update_comment(comment_id, body, current_user, db)
     if comment is None:
@@ -174,8 +171,8 @@ async def remove_comment(
     :param db: Session: Pass the database session to the function
     :param current_user: dict: Get the current user information
     :return: A dict with the message key and value
-    :doc-author: Trelent
     """
     message = await repository_comments.remove_comment(comment_id, current_user, db)
 
     return message
+

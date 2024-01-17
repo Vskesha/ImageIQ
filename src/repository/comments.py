@@ -3,10 +3,12 @@ from typing import Optional, List, Type
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from src.database.models import Comment, User
+from src.database.models import Comment, User, Image
 from src.conf import messages
 from src.schemas.images import CommentModel
+import logging
 
+logger = logging.getLogger(__name__)
 
 async def add_comment(
     body: CommentModel, image_id: int, user: User, db: Session
@@ -23,7 +25,6 @@ async def add_comment(
     :param user: dict: Get the user id from the token
     :param db: Session: Access the database
     :return: A comment object
-    :doc-author: Trelent
     """
     comment = Comment(comment=body.comment, user_id=user.id, image_id=image_id)
     db.add(comment)
@@ -53,7 +54,6 @@ async def update_comment(
     :param db: Session: Access the database
     :param : Get the comment id
     :return: The updated comment
-    :doc-author: Trelent
     """
     comment: Optional[Comment] = (
         db.query(Comment).filter_by(id=comment_id, user_id=user.id).first()
@@ -77,7 +77,6 @@ async def remove_comment(comment_id: int, user: User, db: Session) -> dict:
     :param user: User: Check if the user is authorized to delete a comment
     :param db: Session: Access the database
     :return: A dictionary with a message that the comment has been deleted
-    :doc-author: Trelent
     """
     comment: Optional[Comment] = (
         db.query(Comment).filter_by(id=comment_id, user_id=user.id).first()
@@ -103,9 +102,36 @@ async def get_comments(image_id, db) -> List[Comment]:
     :param image_id: Filter the comments by image_id
     :param db: Query the database for comments that are associated with a specific image
     :return: All comments associated with a particular image
-    :doc-author: Trelent
     """
     return db.query(Comment).filter_by(image_id=image_id).all()
+
+
+
+
+async def get_comments_by_image(image_id: int, db: Session) -> List[Comment]:
+    try:
+        image = db.query(Image).filter_by(id=image_id).first()
+
+        if image:
+            # Вивести image_id перед викликом фільтрації коментарів
+            logger.debug(f"Searching for comments with image_id={image_id}")
+
+            comments = db.query(Comment).filter_by(image_id=image_id).all()
+
+            # Вивести кількість знайдених коментарів
+            logger.debug(f"Found {len(comments)} comments for image_id={image_id}")
+
+            return comments
+        else:
+            # Вивести повідомлення, якщо зображення не знайдено
+            logger.warning(f"Image not found for image_id={image_id}")
+            return {"detail": "Image not found"}
+    except Exception as e:
+        # Логування будь-яких винятків для подальшого аналізу
+        logger.error(f"An error occurred: {str(e)}")
+        raise
+
+
 
 
 async def get_comment_by_id(comment_id: int, db: Session) -> Type[Comment]:
@@ -116,6 +142,5 @@ async def get_comment_by_id(comment_id: int, db: Session) -> Type[Comment]:
     :param comment_id: Get the comment with a specific comment_id
     :param db: Query the database for a comment by its unique identifier
     :return: The comment associated with a particular comment_id
-    :doc-author: Trelent
     """
     return db.query(Comment).filter_by(id=comment_id).first()
