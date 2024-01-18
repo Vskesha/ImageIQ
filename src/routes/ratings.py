@@ -136,4 +136,4 @@ async def remove_rating(
 
     await repository_ratings.remove_rating(rating_id, db, current_user)
 
-    return {"detail": messages.RATING_REMOVED}
+    return {"message": messages.RATING_REMOVED}
