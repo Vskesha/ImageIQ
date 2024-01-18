@@ -60,9 +60,16 @@ class RatingModel(BaseModel):
     rating: Optional[float] = Field(ge=1, le=5)
 
 
+class AverageRatingResponse(RatingModel):
+    rating: Optional[float] = Field(ge=1, le=5)
+
+
 class RatingResponse(RatingModel):
     id: int
     rating: Optional[float] = Field(ge=1, le=5)
+    user_id: int = 1
+    image_id: int = 1
+    created_at: datetime
 
     class Config:
         orm_mode = True
