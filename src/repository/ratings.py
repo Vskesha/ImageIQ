@@ -12,6 +12,16 @@ from src.schemas.images import RatingModel
 async def add_rating(
     body: RatingModel, image_id: int, user: User, db: Session
 ) -> Rating:
+    """
+    The add_rating function adds a rating to an image.
+    
+    :param body: RatingModel: Get the rating from the request body
+    :param image_id: int: Get the image that is being rated
+    :param user: User: Get the user id of the current user
+    :param db: Session: Access the database
+    :return: A rating object
+    :doc-author: Trelent
+    """
     # Check if the image exists
     image = db.query(Image).filter(Image.id == image_id).first()
     if not image:
@@ -46,6 +56,18 @@ async def add_rating(
 
 
 async def get_rating(rating_id: int, db: Session, user: User) -> Type[Rating]:
+    """
+    The get_rating function is used to retrieve a rating from the database.
+        It checks if the user is an admin or moderator, and if not it raises a 403 error.
+        If the user is an admin or moderator, it then checks if the rating exists in 
+        our database and returns that rating object.
+    
+    :param rating_id: int: Get the rating by id
+    :param db: Session: Access the database
+    :param user: User: Check if the user is an admin or moderator
+    :return: A type[rating] object
+    :doc-author: Trelent
+    """
     # Check if the user is admin or moderator
     if user.role != Role.admin and user.role != Role.moderator:
         raise HTTPException(
@@ -62,6 +84,14 @@ async def get_rating(rating_id: int, db: Session, user: User) -> Type[Rating]:
 
 
 async def get_ratings(image_id: int, db: Session) -> List[Type[Rating]]:
+    """
+    The get_ratings function returns all ratings for a given image.
+    
+    :param image_id: int: Specify the image id that is passed in from the url
+    :param db: Session: Pass the database session to the function
+    :return: A list of ratings for the image
+    :doc-author: Trelent
+    """
     # Check if the image exists
     image = db.query(Image).filter(Image.id == image_id).first()
     if not image:
@@ -76,6 +106,19 @@ async def get_ratings(image_id: int, db: Session) -> List[Type[Rating]]:
 
 
 async def get_average_rating(image_id: int, db: Session) -> float:
+    """
+    The get_average_rating function returns the average rating of an image.
+        Args:
+            image_id (int): The id of the image to get ratings for.
+            db (Session): A database session object used to query the database.
+        Returns:
+            float: The average rating rounded to 2 decimal places.
+    
+    :param image_id: int: Get the image id from the database
+    :param db: Session: Pass the database session to the function
+    :return: The average rating of an image
+    :doc-author: Trelent
+    """
     average_rating = (
         db.query(func.avg(Rating.rating)).filter_by(image_id=image_id).scalar()
     )
@@ -87,6 +130,19 @@ async def get_average_rating(image_id: int, db: Session) -> float:
 
 
 async def remove_rating(rating_id: int, db: Session, user: User) -> dict:
+    """
+    The remove_rating function removes a rating from the database.
+        Args:
+            rating_id (int): The id of the rating to be removed.
+            db (Session): A connection to the database.
+            user (User): The user making this request, used for authorization purposes.
+    
+    :param rating_id: int: Specify the id of the rating to be deleted
+    :param db: Session: Access the database
+    :param user: User: Check if the user is admin or moderator
+    :return: A dict, but the function expects a rating
+    :doc-author: Trelent
+    """
     # Check if the rating exists
     rating = db.query(Rating).filter(Rating.id == rating_id).first()
     if not rating:
