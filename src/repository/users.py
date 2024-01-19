@@ -1,13 +1,14 @@
 import pickle
-from typing import Optional
+from typing import Optional,List
 from libgravatar import Gravatar
 from sqlalchemy.orm import Session
 
 from src.database.models import User
-from src.schemas.users import UserModel
+from src.schemas.users import UserModel, UserResponse
 from typing import Type
 from src.conf import messages
 from fastapi import HTTPException, status
+from src.services.auth import auth_service
 
 async def get_cache_user_by_email(email: str, cache = None) -> User | None:
     """
@@ -170,4 +171,42 @@ async def change_password_for_user(user: User, password: str, db: Session) -> Us
     db.add(user)
     db.commit()
     db.refresh(user)
+    return user
+
+
+async def get_all_users(db: Session) -> List[UserResponse]:
+    """
+    The get_all_users function returns a list of all users in the database.
+
+    :param db: Session: Pass the database session to the function
+    :return: A list of users
+    :doc-author: Trelent
+    """
+    users = db.query(User).all()
+    all_users = [UserResponse(id=user.id, username=user.username, email=user.email, avatar=user.avatar, role=user.role) for user in users]
+    return all_users
+
+
+def clear_user_cache(user: User) -> None:
+    """_summary_
+
+    :param user: Clear user from cached storage
+    :type user: User
+    """
+    auth_service.token_manager.r.delete(f"user:{user.email}")
+
+
+async def get_user_by_username(
+    username: str, db: Session, status_active: bool | None = True) -> Type[User] | None:
+    """
+    Retrieves a user by his username.
+
+    :param username: An username to get user from the database by.
+    :type username: str
+    :param db: The database session.
+    :type db: Session
+    :return: The user.
+    :rtype: User
+    """
+    user = db.query(User).filter(User.username == username).first()
     return user

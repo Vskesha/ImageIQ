@@ -33,3 +33,12 @@ class RequestEmail(BaseModel):
 
 class MessageResponse(BaseModel):
     message: str = Field(max_length=2000)
+
+
+class UpdateProfile(BaseModel):
+    username: str | None = Field(min_length=2, max_length=16)
+
+
+class UpdateFullProfile(UpdateProfile):
+    username: str
+    email: EmailStr
