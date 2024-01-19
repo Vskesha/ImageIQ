@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Type
 
 from fastapi import APIRouter, Depends, Path, HTTPException, status
 from fastapi.security import HTTPBearer
@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from src.conf import messages
 from src.database.db import get_db
 from src.database.models import Rating, User
-from src.schemas.images import RatingResponse, RatingModel
+from src.schemas.images import RatingResponse, RatingModel, AverageRatingResponse
 from src.schemas.users import MessageResponse
 from src.services.auth import auth_service
 from src.services.role import allowed_all_roles_access, allowed_admin_moderator
@@ -32,7 +32,7 @@ async def get_all_ratings(
     image_id: int = Path(ge=1),
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_service.token_manager.get_current_user),
-) -> List[RatingResponse]:
+) -> List[Type[Rating]]:
     image = await repository_images.get_image(image_id, current_user, db)
     if image is None:
         raise HTTPException(
@@ -51,13 +51,13 @@ async def get_all_ratings(
         Depends(allowed_all_roles_access),
         Depends(RateLimiter(times=12, seconds=60)),
     ],
-    response_model=RatingResponse
+    response_model=AverageRatingResponse
 )
 async def get_rating(
     image_id: int = Path(ge=1),
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_service.token_manager.get_current_user),
-) -> RatingResponse:
+) -> AverageRatingResponse:
     image = await repository_images.get_image(image_id, current_user, db)
     if image is None:
         raise HTTPException(
@@ -66,7 +66,7 @@ async def get_rating(
 
     average_rating = await repository_ratings.get_average_rating(image_id, db)
 
-    return RatingResponse(rating=average_rating)
+    return AverageRatingResponse(rating=average_rating)
 
 
 @router.post(
@@ -83,7 +83,7 @@ async def add_rating(
     image_id: int = Path(ge=1),
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_service.token_manager.get_current_user),
-) -> RatingResponse:
+) -> Rating:
     image = await repository_images.get_image(image_id, current_user, db)
 
     if image is None:
@@ -136,4 +136,4 @@ async def remove_rating(
 
     await repository_ratings.remove_rating(rating_id, db, current_user)
 
-    return {"detail": messages.RATING_REMOVED}
+    return {"message": messages.RATING_REMOVED}

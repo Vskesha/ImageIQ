@@ -1,12 +1,13 @@
+import logging
 from typing import Optional, List, Type
 
 from fastapi import HTTPException, status
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from src.database.models import Comment, User, Image
 from src.conf import messages
-from src.schemas.images import CommentModel
-import logging
+from src.schemas.images import CommentModel, SortDirection, CommentModel
 
 logger = logging.getLogger(__name__)
 
@@ -55,11 +56,16 @@ async def update_comment(
     :param : Get the comment id
     :return: The updated comment
     """
-    comment: Optional[Comment] = (
-        db.query(Comment).filter_by(id=comment_id, user_id=user.id).first()
-    )
+    comment: Optional[Comment] = db.query(Comment).filter_by(id=comment_id).first()
+
     if not comment or not body.comment:
         return None
+
+    if comment.user_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=messages.NOT_ALLOWED,
+        )
 
     comment.comment = body.comment
     db.add(comment)
@@ -79,7 +85,7 @@ async def remove_comment(comment_id: int, user: User, db: Session) -> dict:
     :return: A dictionary with a message that the comment has been deleted
     """
     comment: Optional[Comment] = (
-        db.query(Comment).filter_by(id=comment_id, user_id=user.id).first()
+        db.query(Comment).filter_by(id=comment_id).first()
     )
 
     if comment is None:
@@ -144,3 +150,24 @@ async def get_comment_by_id(comment_id: int, db: Session) -> Type[Comment]:
     :return: The comment associated with a particular comment_id
     """
     return db.query(Comment).filter_by(id=comment_id).first()
+
+
+async def get_comments_by_image(image_id: int, sort_direction: SortDirection, db: Session) -> List[Type[Comment]]:
+    """
+    The get_comments_by_image function returns a list of comments for the image with the given id.
+        Args:
+            image_id (int): The id of an image in the database.
+            db (Session): A database session object to query from.
+    :param image_id: int: Filter the comments by image id
+    :param sort_direction: SortDirection: The sort direction of the comments
+    :param db: Session: Pass the database session into the function
+    :return: A list of comments that are associated with a specific image
+    :doc-author: Trelent
+    """
+    query = db.query(Comment).filter_by(image_id=image_id)
+    if sort_direction == SortDirection.desc:
+        comments = query.order_by(desc(Comment.id)).all()
+    else:
+        comments = query.order_by(Comment.id).all()
+
+    return comments

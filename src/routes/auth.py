@@ -20,14 +20,14 @@ template_directories = ['src/services/templates', 'static/client']
 templates = Jinja2Templates(directory=template_directories)
 
 
-@router.post("/logout")
+@router.post("/logout", response_class=JSONResponse)
 async def logout_new_route(token: str = Depends(auth_service.token_manager.oauth2_scheme),
-                           db: Session = Depends(get_db)):
+                           db: Session = Depends(get_db)) -> JSONResponse:
     try:
         await auth_service.token_manager.logout_user(token=token, db=db)
-        return "You have logged out!!!"
+        return JSONResponse(content={"message": "You have logged out!!!"}, status_code=200)
     except HTTPException as e:
-        return e
+        return JSONResponse(content={"message": e.detail}, status_code=e.status_code)
 
 
 @router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
@@ -126,9 +126,9 @@ async def confirmed_email(token: str, db: Session = Depends(get_db)):
     return RedirectResponse(url="/api/auth/email-confirm/done", status_code=status.HTTP_303_SEE_OTHER)
 
 
-@router.post("/request_email")
+@router.post("/request_email", response_class=JSONResponse)
 async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, request: Request,
-                        db: Session = Depends(get_db)):
+                        db: Session = Depends(get_db)) -> JSONResponse:
     """
     The request_email function is used to send an email to the user with a link that will allow them
     to confirm their account. The function takes in a RequestEmail object, which contains the email of
@@ -216,7 +216,7 @@ async def reset_password_confirm(token: str, background_tasks: BackgroundTasks, 
     return templates.TemplateResponse("password_reset_email_confirmed.html", {"request": request})
 
 
-@router.post("/reset-password")
+@router.post("/reset-password", response_class=JSONResponse)
 async def reset_password(body: RequestEmail, background_tasks: BackgroundTasks, request: Request,
                          db: Session = Depends(get_db)) -> JSONResponse:
     """

@@ -9,7 +9,7 @@ from starlette.responses import StreamingResponse
 
 from src.conf import messages
 from src.database.db import get_db
-from src.database.models import Image, TransformationsType, User
+from src.database.models import Image, TransformationsType, User, Role
 from src.repository import images as repository_images
 from src.repository import tags as repository_tags
 from src.schemas.images import ImageModel, ImageResponse, SortDirection
@@ -133,12 +133,12 @@ async def transform_image(
     image = await repository_images.get_image(image_id, current_user, db)
     if image is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.MSC404_IMAGE_NOT_FOUND)
-    if image.user_id != current_user.id:
+    if image.user_id != current_user.id and current_user.role != Role.admin:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=messages.MSC400_BAD_REQUEST)
 
     transform_image_link = CloudImage.transformation(image, type)
     body = {
-        'description': image.description,
+        'description': image.description + ' ' + type.value,
         'link': transform_image_link,
         'tags': image.tags,
         'type': image.type
@@ -291,7 +291,7 @@ async def update_image(
             )
 async def get_image_by_tag_name(
                     tag_name: str,
-                    sort_direction: SortDirection,
+                    sort_direction: SortDirection = SortDirection.desc,
                     db: Session = Depends(get_db),
                     current_user: User = Depends(auth_service.token_manager.get_current_user),
             ) -> List[Image]:
