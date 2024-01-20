@@ -6,8 +6,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 
-from src.database.models import Image, Tag
-from src.schemas.images import ImageModel
+from src.database.models import Image, Tag, Role
 from src.conf import messages
 from src.repository import tags as repository_tags
 from src.database.models import User
@@ -194,13 +193,13 @@ async def update_image(
     :return: The updated image
     :doc-author: Trelent
     """
-    if user.role in ['admin', 'moderator']:
-        image: Optional[Image] = db.query(Image).filter_by(id=image_id).first()
-    else:
-        image: Optional[Image] = db.query(Image).filter_by(id=image_id, user_id=user.id).first()
+    image: Optional[Image] = db.query(Image).filter_by(id=image_id).first()
 
     if not image or not body.description:
         return None
+
+    if image.user_id != user.id and user.role != Role.admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=messages.NOT_ALLOWED)
 
     image.description = body.description
 
