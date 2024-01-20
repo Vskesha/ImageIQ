@@ -200,7 +200,7 @@ def clear_user_cache(user: User) -> None:
 
 async def get_user_by_username(
         username: str, db: Session,
-        status_active: bool | None = True) -> Type[User] | None:
+        status_active: bool | None = True) -> User | None:
     """
     Retrieves a user by his username.
 

@@ -180,7 +180,14 @@ async def change_role(
     )
 
 
-@router.get("/{username}/profile/", status_code=status.HTTP_200_OK)
+@router.get("/profile/{username}/",
+            description="Get profile of given {username}.\nNo more than 5 requests per minute",
+            dependencies=[
+                Depends(allowed_all_roles_access),
+                Depends(RateLimiter(times=5, seconds=60))
+            ],
+            status_code=status.HTTP_200_OK,
+            response_model=ProfileResponse)
 async def read_profile_user(
     username: str = Path(min_length=2, max_length=16),
     current_user: User = Depends(auth_service.token_manager.get_current_user),
@@ -189,13 +196,12 @@ async def read_profile_user(
     """
     Get profile of selected user by their username
 
+    :param db: Session: connection to the database
     :param username: username of user.
     :type current_user: str
     :return: The current user.
     :rtype: dict
     """
-    if current_user.role != Role.admin:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=messages.MSC403_FORBIDDEN)
     user = await repository_users.get_user_by_username(username, db)
     if user and user.status_active is not None:
         result = await repository_profile.read_profile(user, db)
