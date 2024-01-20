@@ -1,7 +1,8 @@
-from libgravatar import Gravatar
+from fastapi import HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from src.conf import messages
 from src.repository.users import get_user_by_username, get_user_by_email, clear_user_cache, get_user_by_id
 from src.database.models import User, Comment, Image, Role
 from src.schemas.users import UpdateFullProfile, ProfileResponse
@@ -18,24 +19,25 @@ async def read_profile(user: User, db: Session) -> ProfileResponse:
     :return: All information about user.
     :rtype: ProfileResponse
     """
-    result = {}
-    if user:
-        comments_count = db.query(func.count(Comment.id)).filter(Comment.user_id == user.id).scalar()
-        images_count = db.query(func.count(Image.id)).filter(Image.user_id == user.id).scalar()
-        result = ProfileResponse(
-            id=user.id,
-            username=user.username,
-            email=user.email,
-            avatar=user.avatar,
-            role=user.role,
-            created_at=user.created_at,
-            comments_count=comments_count,
-            images_count=images_count,
-        )
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.USER_NOT_FOUND)
+
+    comments_count = db.query(func.count(Comment.id)).filter(Comment.user_id == user.id).scalar()
+    images_count = db.query(func.count(Image.id)).filter(Image.user_id == user.id).scalar()
+    result = ProfileResponse(
+        id=user.id,
+        username=user.username,
+        email=user.email,
+        avatar=user.avatar,
+        role=user.role,
+        created_at=user.created_at,
+        comments_count=comments_count,
+        images_count=images_count,
+    )
     return result
 
 
-async def update_profile(data: UpdateFullProfile, user: User, db: Session) -> bool | None:
+async def update_profile(data: UpdateFullProfile, user: User, db: Session) -> bool:
     """
     Update user profile in the database.
 
@@ -58,12 +60,13 @@ async def update_profile(data: UpdateFullProfile, user: User, db: Session) -> bo
             existing_user = await get_user_by_email(str(data.email), db)
             if not existing_user or existing_user.id == user.id:
                 user.email = str(data.email)
-
+        db.add(user)
         db.commit()
+        db.refresh(user)
         clear_user_cache(user)
         return True
 
-    return None
+    return False
 
 
 async def change_role(user_id: int, role_user: Role, db: Session) -> bool:

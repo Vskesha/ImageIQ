@@ -47,5 +47,10 @@ class UpdateProfile(BaseModel):
 
 
 class UpdateFullProfile(UpdateProfile):
-    username: str
-    email: EmailStr
+    username: Optional[str]
+    email: EmailStr | str
+
+
+class ChangeRoleModel(BaseModel):
+    user_id: int
+    user_role: Role
