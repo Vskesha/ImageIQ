@@ -58,7 +58,9 @@ async def update_avatar_user(file: UploadFile = File(),
 @router.patch(
               '/ban_user/{user_id}/{active_status}',
               response_model=UserResponse,
-              dependencies=[Depends(allowed_admin_moderator)],
+              dependencies=[
+                  Depends(allowed_admin),
+                  Depends(RateLimiter(times=5, seconds=60))],
               description='Ban/unban user'
               )
 async def ban_user(
