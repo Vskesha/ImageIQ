@@ -66,7 +66,7 @@ async def update_profile(data: UpdateFullProfile, user: User, db: Session) -> bo
     return None
 
 
-async def update_profile_by_admin(user_id: int, role_user: Role, db: Session) -> bool | None:
+async def change_role(user_id: int, role_user: Role, db: Session) -> bool:
     """
     Update user profile by admin.
 
@@ -76,12 +76,12 @@ async def update_profile_by_admin(user_id: int, role_user: Role, db: Session) ->
     :type role_user: Role
     :param db: The database session.
     :type db: Session
-    :return: True if the profile was updated, None otherwise.
-    :rtype: bool | None
+    :return: True if the profile was updated, False otherwise.
+    :rtype: bool
     """
     user_to_update = await get_user_by_id(user_id, db)
     if user_to_update and user_to_update.role != role_user:
         user_to_update.role = role_user
         db.commit()
         return True
-    return None
+    return False

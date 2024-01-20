@@ -14,8 +14,7 @@ from src.services.cloud_image import CloudImage
 from src.conf import messages
 from typing import Optional
 from src.services.role import allowed_admin_moderator
-from src.schemas.users import UserResponse, UpdateFullProfile
-
+from src.schemas.users import UserResponse, UpdateFullProfile, ProfileResponse
 
 router = APIRouter(prefix="/users", tags=["users"])
 security = HTTPBearer()
@@ -130,13 +129,16 @@ async def update_profile(
     )
 
 
-@router.patch("/profile_update_by_admin/", status_code=status.HTTP_200_OK)
-async def update_profile_by_admin(
+@router.patch("/change_role/",
+              dependencies=[Depends(allowed_admin_moderator)],
+              status_code=status.HTTP_200_OK,
+              response_model=ProfileResponse)
+async def change_role(
     user_id: int,
     role_user: Role,
     current_user: User = Depends(auth_service.token_manager.get_current_user),
     db: Session = Depends(get_db)
-):
+) -> ProfileResponse:
     """
     The update_profile_by_admin function allows an admin to update the role of a user.
         The function takes in the following parameters:
@@ -156,7 +158,7 @@ async def update_profile_by_admin(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=messages.MSC403_FORBIDDEN)
     user = await repository_users.get_user_by_id(user_id, db)
     if user:
-        updated = await repository_profile.update_profile_by_admin(user_id, role_user, db)
+        updated = await repository_profile.change_role(user_id, role_user, db)
         if updated:
             result = await repository_profile.read_profile(user, db)
             return result
