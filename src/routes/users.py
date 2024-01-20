@@ -210,6 +210,36 @@ async def read_profile_user(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.USER_NOT_FOUND)
 
 
+@router.get("/profile/id/{user_id}/",
+            description="Get profile of user with given {user_id}.\nNo more than 5 requests per minute",
+            dependencies=[
+                Depends(allowed_all_roles_access),
+                Depends(RateLimiter(times=5, seconds=60))
+            ],
+            status_code=status.HTTP_200_OK,
+            response_model=ProfileResponse)
+async def read_profile_user(
+    user_id: int = Path(ge=1),
+    current_user: User = Depends(auth_service.token_manager.get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get profile of selected user by their username
+
+    :param db: Session: connection to the database
+    :param user_id: int: user_id of user.
+    :type current_user: str
+    :return: The current user.
+    :rtype: dict
+    """
+    user = await repository_users.get_user_by_id(user_id, db)
+    if user and user.status_active is not None:
+        result = await repository_profile.read_profile(user, db)
+        return result
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.USER_NOT_FOUND)
+
+
 @router.get("/profil_all/", status_code=status.HTTP_200_OK)
 async def read_profile_all_users(
     current_user: User = Depends(auth_service.token_manager.get_current_user),
