@@ -14,7 +14,7 @@ from src.conf.config import settings
 from src.services.cloud_image import CloudImage
 from src.conf import messages
 from typing import Optional
-from src.services.role import allowed_admin_moderator, allowed_all_roles_access
+from src.services.role import allowed_admin_moderator, allowed_all_roles_access, allowed_admin
 from src.schemas.users import UserResponse, UpdateFullProfile, ProfileResponse, ChangeRoleModel
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -138,7 +138,11 @@ async def update_profile(
 
 
 @router.patch("/change_role/",
-              dependencies=[Depends(allowed_admin_moderator)],
+              description='Updates role of user (only for admins).\nNo more than 5 requests per minute',
+              dependencies=[
+                  Depends(allowed_admin),
+                  Depends(RateLimiter(times=5, seconds=60))
+              ],
               status_code=status.HTTP_200_OK,
               response_model=ProfileResponse)
 async def change_role(
