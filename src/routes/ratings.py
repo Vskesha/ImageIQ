@@ -41,7 +41,6 @@ async def get_all_ratings(
     :param current_user: User: Get the user that is currently logged in
     :param : Get the image id from the url path
     :return: A list of rating objects
-    :doc-author: Trelent
     """
     image = await repository_images.get_image(image_id, current_user, db)
     if image is None:
@@ -75,8 +74,7 @@ async def get_rating(
     :param db: Session: Pass the database session to the repository function
     :param current_user: User: Get the user who is making the request
     :param : Get the image id from the url
-    :return: An averageratingresponse object
-    :doc-author: Trelent
+    :return: An average rating response object
     """
     image = await repository_images.get_image(image_id, current_user, db)
     if image is None:
@@ -113,7 +111,6 @@ async def add_rating(
     :param current_user: User: Get the user who is currently logged in
     :param : Get the image id from the path
     :return: A rating object
-    :doc-author: Trelent
     """
     image = await repository_images.get_image(image_id, current_user, db)
 
@@ -168,7 +165,6 @@ async def remove_rating(
     :param current_user: User: Get the user id of the current user
     :param : Get the rating id from the url
     :return: A dictionary with a message key and value
-    :doc-author: Trelent
     """
     rating = await repository_ratings.get_rating(rating_id, db, current_user)
 
