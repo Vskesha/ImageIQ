@@ -7,13 +7,12 @@ from src.database.models import User, Comment, Image, Role
 from src.schemas.users import UpdateProfile
 
 
-
 async def read_profile(user: User, db: Session) -> dict:
     """
     Retrieves a user profile.
 
-    :param email: An email to get user from the database by.
-    :type email: str
+    :param user: given user.
+    :type user: User
     :param db: The database session.
     :type db: Session
     :return: The user.
@@ -24,6 +23,7 @@ async def read_profile(user: User, db: Session) -> dict:
         comments_count = db.query(func.count(Comment.id)).filter(Comment.user_id == user.id).scalar()
         images_count = db.query(func.count(Image.id)).filter(Image.user_id == user.id).scalar()
         result = {
+            "id": user.id,
             "username": user.username,
             "email": user.email,
             "avatar": user.avatar,
@@ -70,12 +70,10 @@ async def update_profile_by_admin(user_id: int, role_user: Role, db: Session) ->
     """
     Update user profile by admin.
 
-    :param username: Username of the user to update.
-    :type username: str
-    :param data: Data to update the profile.
-    :type data: UpdateProfile
-    :param admin_user: Admin user performing the update.
-    :type admin_user: User
+    :param user_id: The id of the user to update.
+    :type user_id: int
+    :param role_user: The role of the user to update.
+    :type role_user: Role
     :param db: The database session.
     :type db: Session
     :return: True if the profile was updated, None otherwise.

@@ -10,6 +10,7 @@ from src.conf import messages
 from fastapi import HTTPException, status
 from src.services.auth import auth_service
 
+
 async def get_cache_user_by_email(email: str, cache = None) -> User | None:
     """
     The get_cache_user_by_email function is used to retrieve a user from the cache.
@@ -97,6 +98,7 @@ async def create_user(body: UserModel, db: Session):
     db.refresh(new_user)
     return new_user
 
+
 async def update_token(user: User, token: str | None, db: Session) -> None:
     """
     The update_token function updates the refresh token for a user.
@@ -105,7 +107,7 @@ async def update_token(user: User, token: str | None, db: Session) -> None:
         refresh_token (str): The new refresh token to use for this user.
         db (Session): A database session object used to commit changes.
         :param user: UserModel: Pass in the user object that is returned from the get_user function
-        :param refresh_token: Update the refresh_token in the database
+        :param token: Update the refresh_token in the database
         :param db: Session: Access the database
         :return: The user object
     """
@@ -152,7 +154,7 @@ async def ban_user(user_id: int, active_status: bool, db: Session) -> Type[User]
     user = db.query(User).filter_by(id=user_id).first()
 
     # Print user values before commit
-    print(f"User values before commit: {user.id}, {user.username}, {user.email}, {user.status_active}")
+    # print(f"User values before commit: {user.id}, {user.username}, {user.email}, {user.status_active}")
 
     if not user:
         return None
@@ -197,7 +199,8 @@ def clear_user_cache(user: User) -> None:
 
 
 async def get_user_by_username(
-    username: str, db: Session, status_active: bool | None = True) -> Type[User] | None:
+        username: str, db: Session,
+        status_active: bool | None = True) -> Type[User] | None:
     """
     Retrieves a user by his username.
 

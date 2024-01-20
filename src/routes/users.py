@@ -33,7 +33,8 @@ async def read_users_me(current_user: User = Depends(auth_service.token_manager.
 
 
 @router.patch('/avatar', response_model=UserResponse)
-async def update_avatar_user(file: UploadFile = File(), current_user: User = Depends(auth_service.token_manager.get_current_user),
+async def update_avatar_user(file: UploadFile = File(),
+                             current_user: User = Depends(auth_service.token_manager.get_current_user),
                              db: Session = Depends(get_db)):
     """
     The update_avatar_user function updates the avatar of a user.
@@ -64,7 +65,7 @@ async def update_avatar_user(file: UploadFile = File(), current_user: User = Dep
               description='Ban/unban user'
               )
 async def ban_user(
-                   id: int,
+                   user_id: int,
                    active_status: bool,
                    current_user: dict = Depends(auth_service.token_manager.get_current_user),
                    credentials: HTTPAuthorizationCredentials = Security(security),
@@ -80,7 +81,7 @@ async def ban_user(
     :return: The banned user object
     :doc-author: Trelent
     """
-    user: Optional[User] = await repository_users.ban_user(id, active_status, db)
+    user: Optional[User] = await repository_users.ban_user(user_id, active_status, db)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.MSC404_USER_NOT_FOUND)
 
