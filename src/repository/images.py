@@ -90,12 +90,7 @@ async def create_image(
     :return: A new image object
     :doc-author: Trelent
     """
-    tags_names = body['tags'].split()
-    if len(tags_names) > tags_limit:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT_BAD_REQUEST,
-            detail=messages.MSC409_TAGS
-        )
+    tags_names = body['tags'].split()[:tags_limit]
 
     tags = []
     for el in tags_names:
