@@ -7,7 +7,9 @@ from sqlalchemy import (String, Integer, ForeignKey, DateTime, func, Enum, Boole
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from src.database.db import get_db
+from src.database.db import SessionLocal
+
+session = SessionLocal()
 
 
 class Base(DeclarativeBase):
@@ -78,11 +80,9 @@ class Image(Base):
 
     @hybrid_property
     def rating(self):
-        avg_rating_query = (select([func.avg(Rating.rating)])
-                            .where(Rating.image_id == self.id)
-                            .group_by(Rating.image_id))
-        session = get_db()
-        avg_rating = session.execute(avg_rating_query).scalar()
+        avg_rating = (session.query(func.avg(Rating.rating))
+                      .filter(Rating.image_id == self.id)
+                      .group_by(Rating.image_id).scalar())
         return avg_rating or 0.0
 
 
