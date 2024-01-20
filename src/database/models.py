@@ -80,10 +80,13 @@ class Image(Base):
 
     @hybrid_property
     def rating(self):
-        avg_rating = (session.query(func.avg(Rating.rating))
-                      .filter(Rating.image_id == self.id)
-                      .group_by(Rating.image_id).scalar())
-        return avg_rating or 0.0
+        try:
+            avg_rating = (session.query(func.avg(Rating.rating))
+                          .filter(Rating.image_id == self.id)
+                          .group_by(Rating.image_id).scalar())
+            return avg_rating or 0.0
+        except Exception:
+            return 0.0
 
 
 class Comment(Base):
