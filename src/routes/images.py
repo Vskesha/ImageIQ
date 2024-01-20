@@ -221,7 +221,7 @@ async def create_image(
             '/{image_id}',
             description='Remove image.\nNo more than 12 requests per minute.',
             dependencies=[
-                Depends(allowed_admin_moderator),
+                Depends(allowed_all_roles_access),
                 Depends(RateLimiter(times=2, seconds=60))
             ],
             response_model=MessageResponse

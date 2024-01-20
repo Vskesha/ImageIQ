@@ -159,15 +159,16 @@ async def remove_image(
     :return: A dict with a message saying that the image has been deleted
     :doc-author: Trelent
     """
-    if user.role in ['admin', 'moderator']:
-        image: Optional[Image] = db.query(Image).filter_by(id=image_id).first()
-    else:
-        image: Optional[Image] = db.query(Image).filter_by(id=image_id, user_id=user.id).first()
+    image: Optional[Image] = db.query(Image).filter_by(id=image_id).first()
+
     if image is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.MSC404_IMAGE_NOT_FOUND)
-    else:
-        db.delete(image)
-        db.commit()
+
+    if image.user_id != user.id and user.role != Role.admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=messages.NOT_ALLOWED)
+
+    db.delete(image)
+    db.commit()
     return {'message': messages.DELETED_IMAGE}
 
 
