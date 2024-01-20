@@ -1,13 +1,13 @@
 import pickle
-from typing import Optional,List
+from typing import Optional, List, Type
+
+from fastapi import HTTPException, status
 from libgravatar import Gravatar
 from sqlalchemy.orm import Session
 
-from src.database.models import User
-from src.schemas.users import UserModel, UserResponse
-from typing import Type
 from src.conf import messages
-from fastapi import HTTPException, status
+from src.database.models import User
+from src.schemas.users import UserModel
 from src.services.auth import auth_service
 
 
@@ -176,7 +176,7 @@ async def change_password_for_user(user: User, password: str, db: Session) -> Us
     return user
 
 
-async def get_all_users(db: Session) -> List[UserResponse]:
+async def get_all_users(db: Session) -> List[User]:
     """
     The get_all_users function returns a list of all users in the database.
 
@@ -185,8 +185,8 @@ async def get_all_users(db: Session) -> List[UserResponse]:
     :doc-author: Trelent
     """
     users = db.query(User).all()
-    all_users = [UserResponse(id=user.id, username=user.username, email=user.email, avatar=user.avatar, role=user.role) for user in users]
-    return all_users
+    users = [await get_user_by_id(user.id, db) for user in users]
+    return users
 
 
 def clear_user_cache(user: User) -> None:
