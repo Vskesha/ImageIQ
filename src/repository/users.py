@@ -1,14 +1,15 @@
 import pickle
-from typing import Optional,List
+from typing import Optional, List, Type
+
+from fastapi import HTTPException, status
 from libgravatar import Gravatar
 from sqlalchemy.orm import Session
 
-from src.database.models import User
-from src.schemas.users import UserModel, UserResponse
-from typing import Type
 from src.conf import messages
-from fastapi import HTTPException, status
+from src.database.models import User
+from src.schemas.users import UserModel
 from src.services.auth import auth_service
+
 
 async def get_cache_user_by_email(email: str, cache = None) -> User | None:
     """
@@ -97,6 +98,7 @@ async def create_user(body: UserModel, db: Session):
     db.refresh(new_user)
     return new_user
 
+
 async def update_token(user: User, token: str | None, db: Session) -> None:
     """
     The update_token function updates the refresh token for a user.
@@ -105,7 +107,7 @@ async def update_token(user: User, token: str | None, db: Session) -> None:
         refresh_token (str): The new refresh token to use for this user.
         db (Session): A database session object used to commit changes.
         :param user: UserModel: Pass in the user object that is returned from the get_user function
-        :param refresh_token: Update the refresh_token in the database
+        :param token: Update the refresh_token in the database
         :param db: Session: Access the database
         :return: The user object
     """
@@ -152,7 +154,7 @@ async def ban_user(user_id: int, active_status: bool, db: Session) -> Type[User]
     user = db.query(User).filter_by(id=user_id).first()
 
     # Print user values before commit
-    print(f"User values before commit: {user.id}, {user.username}, {user.email}, {user.status_active}")
+    # print(f"User values before commit: {user.id}, {user.username}, {user.email}, {user.status_active}")
 
     if not user:
         return None
@@ -174,7 +176,7 @@ async def change_password_for_user(user: User, password: str, db: Session) -> Us
     return user
 
 
-async def get_all_users(db: Session) -> List[UserResponse]:
+async def get_all_users(db: Session) -> List[User]:
     """
     The get_all_users function returns a list of all users in the database.
 
@@ -183,8 +185,8 @@ async def get_all_users(db: Session) -> List[UserResponse]:
     :doc-author: Trelent
     """
     users = db.query(User).all()
-    all_users = [UserResponse(id=user.id, username=user.username, email=user.email, avatar=user.avatar, role=user.role) for user in users]
-    return all_users
+    users = [await get_user_by_id(user.id, db) for user in users]
+    return users
 
 
 def clear_user_cache(user: User) -> None:
@@ -197,7 +199,8 @@ def clear_user_cache(user: User) -> None:
 
 
 async def get_user_by_username(
-    username: str, db: Session, status_active: bool | None = True) -> Type[User] | None:
+        username: str, db: Session,
+        status_active: bool | None = True) -> User | None:
     """
     Retrieves a user by his username.
 
