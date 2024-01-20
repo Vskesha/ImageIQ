@@ -21,10 +21,17 @@ router = APIRouter(prefix="/users", tags=["users"])
 security = HTTPBearer()
 
 
-@router.patch('/avatar', response_model=UserResponse)
+@router.patch('/avatar/',
+              description="Change avatar.\nNo more than 5 requests per minute",
+              dependencies=[
+                  Depends(allowed_all_roles_access),
+                  Depends(RateLimiter(times=5, seconds=60))
+              ],
+              status_code=status.HTTP_200_OK,
+              response_model=UserResponse)
 async def update_avatar_user(file: UploadFile = File(),
                              current_user: User = Depends(auth_service.token_manager.get_current_user),
-                             db: Session = Depends(get_db)):
+                             db: Session = Depends(get_db)) -> User:
     """
     The update_avatar_user function updates the avatar of a user.
         The function takes in an UploadFile object, which is a file that has been uploaded to the server.
