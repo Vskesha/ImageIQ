@@ -20,7 +20,6 @@ async def add_rating(
     :param user: User: Get the user id of the current user
     :param db: Session: Access the database
     :return: A rating object
-    :doc-author: Trelent
     """
     # Check if the image exists
     image = db.query(Image).filter(Image.id == image_id).first()
@@ -66,7 +65,6 @@ async def get_rating(rating_id: int, db: Session, user: User) -> Type[Rating]:
     :param db: Session: Access the database
     :param user: User: Check if the user is an admin or moderator
     :return: A type[rating] object
-    :doc-author: Trelent
     """
     # Check if the user is admin or moderator
     if user.role != Role.admin and user.role != Role.moderator:
@@ -90,7 +88,6 @@ async def get_ratings(image_id: int, db: Session) -> List[Type[Rating]]:
     :param image_id: int: Specify the image id that is passed in from the url
     :param db: Session: Pass the database session to the function
     :return: A list of ratings for the image
-    :doc-author: Trelent
     """
     # Check if the image exists
     image = db.query(Image).filter(Image.id == image_id).first()
@@ -117,7 +114,6 @@ async def get_average_rating(image_id: int, db: Session) -> float:
     :param image_id: int: Get the image id from the database
     :param db: Session: Pass the database session to the function
     :return: The average rating of an image
-    :doc-author: Trelent
     """
     average_rating = (
         db.query(func.avg(Rating.rating)).filter_by(image_id=image_id).scalar()
@@ -141,7 +137,6 @@ async def remove_rating(rating_id: int, db: Session, user: User) -> dict:
     :param db: Session: Access the database
     :param user: User: Check if the user is admin or moderator
     :return: A dict, but the function expects a rating
-    :doc-author: Trelent
     """
     # Check if the rating exists
     rating = db.query(Rating).filter(Rating.id == rating_id).first()
