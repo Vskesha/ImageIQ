@@ -165,15 +165,15 @@ class TokenManager:
                 raise credentials_exception
             self.r.set(f"user:{email}", pickle.dumps(user))
             self.r.expire(f"user:{email}", 900)
-            print('User taken from database')
+            # print('User taken from database')
 
         else:
             user = pickle.loads(user)
-            print('User taken from redis cache')
+            # print('User taken from redis cache')
 
-        print(f'{user.id=}')
-        print(f'{user.username=}')
-        print(f'{user.status_active=}')
+        # print(f'{user.id=}')
+        # print(f'{user.username=}')
+        # print(f'{user.status_active=}')
         if not user.status_active:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -236,7 +236,7 @@ class TokenManager:
                 email = payload["sub"]
                 return email
         except JWTError as e:
-            print(e)
+            # print(e)
             raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                                 detail="Invalid token for email verification")
 
