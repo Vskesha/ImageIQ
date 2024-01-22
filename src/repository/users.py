@@ -160,7 +160,7 @@ async def ban_user(user_id: int, active_status: bool, db: Session) -> Type[User]
         return None
 
     if user.role.value == 'admin':
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=messages.MSC403_USER_BANNED)
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=messages.NOT_ALLOWED)
 
     user.status_active = active_status
     db.commit()

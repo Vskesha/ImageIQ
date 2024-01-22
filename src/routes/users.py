@@ -2,8 +2,8 @@ from typing import Optional, List
 
 import cloudinary
 import cloudinary.uploader
-from fastapi import APIRouter, Depends, status, UploadFile, File, HTTPException, Security, Path
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi import APIRouter, Depends, status, UploadFile, File, HTTPException, Path
+from fastapi.security import HTTPBearer
 from fastapi_limiter.depends import RateLimiter
 from sqlalchemy.orm import Session
 
@@ -12,10 +12,10 @@ from src.conf.config import settings
 from src.database.db import get_db
 from src.database.models import User, Role
 from src.repository import users as repository_users, profile as repository_profile
-from src.schemas.users import UserResponse, UpdateFullProfile, ProfileResponse, ChangeRoleModel
+from src.schemas.users import UserResponse, UpdateFullProfile, ProfileResponse, ChangeRoleModel, ResponseBanned
 from src.services.auth import auth_service
 from src.services.cloud_image import CloudImage
-from src.services.role import allowed_admin_moderator, allowed_all_roles_access, allowed_admin
+from src.services.role import allowed_all_roles_access, allowed_admin
 
 router = APIRouter(prefix="/users", tags=["users"])
 security = HTTPBearer()
@@ -56,36 +56,63 @@ async def update_avatar_user(file: UploadFile = File(),
 
 
 @router.patch(
-              '/ban_user/{user_id}/{active_status}',
-              response_model=UserResponse,
+              '/ban/{user_id}/',
+              response_model=ResponseBanned,
               dependencies=[
                   Depends(allowed_admin),
                   Depends(RateLimiter(times=5, seconds=60))],
-              description='Ban/unban user'
+              description='Ban user'
               )
 async def ban_user(
                    user_id: int,
-                   active_status: bool,
                    current_user: dict = Depends(auth_service.token_manager.get_current_user),
-                   credentials: HTTPAuthorizationCredentials = Security(security),
                    db: Session = Depends(get_db)
-                   ) -> User:
+                   ) -> ResponseBanned:
     """
     The ban_user function is used to ban a user from the system.
 
     :param user_id: int: Identify the user to be banned
-    :param active_status: bool: Set the user's status to active or inactive
     :param current_user: dict: Get the current user from the auth user class
     :param db: Session: Access the database
-    :return: The banned user object
+    :return: MessageResponse: message that the user has been banned
     """
-    user: Optional[User] = await repository_users.ban_user(user_id, active_status, db)
+    user: Optional[User] = await repository_users.ban_user(user_id, False, db)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.MSC404_USER_NOT_FOUND)
 
     await auth_service.token_manager.clear_user_cash(user.email)
 
-    return user
+    return ResponseBanned(message=f"User with id={user_id} and email={user.email} has been banned")
+
+
+@router.patch(
+              '/unban/{user_id}/',
+              response_model=ResponseBanned,
+              dependencies=[
+                  Depends(allowed_admin),
+                  Depends(RateLimiter(times=5, seconds=60))],
+              description='Unban user'
+              )
+async def unban_user(
+                   user_id: int,
+                   current_user: dict = Depends(auth_service.token_manager.get_current_user),
+                   db: Session = Depends(get_db)
+                   ) -> ResponseBanned:
+    """
+    The unban_user function is used to unban a user.
+
+    :param user_id: int: Identify the user to be unbanned
+    :param current_user: dict: Get the current user from the auth user class
+    :param db: Session: Access the database
+    :return: ResponseBanned: message that the user has been unbanned
+    """
+    user: Optional[User] = await repository_users.ban_user(user_id, True, db)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.MSC404_USER_NOT_FOUND)
+
+    await auth_service.token_manager.clear_user_cash(user.email)
+
+    return ResponseBanned(message=f"User with id={user_id} and email={user.email} has been unbanned")
 
 
 @router.get("/me/",
