@@ -12,6 +12,7 @@ SQLALCHEMY_DATABASE_URL = 'postgresql://user:password@localhost/dbname'
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={'check_same_thread': False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 @pytest.fixture(scope='module')
 def session():
     Base.metadata.drop_all(bind=engine)
@@ -21,6 +22,7 @@ def session():
         yield db
     finally:
         db.close()
+
 
 @pytest.fixture(scope='module')
 def client(session):
@@ -33,6 +35,7 @@ def client(session):
     app.dependency_overrides[get_db] = override_get_db
     yield TestClient(app)
 
+
 @pytest.fixture(scope='module')
 def admin():
     return {
@@ -43,6 +46,7 @@ def admin():
         'roles': 'admin',
         'status_active': 'true',
     }
+
 
 @pytest.fixture(scope='module')
 def user():
@@ -55,6 +59,7 @@ def user():
         'status_active': 'true',
     }
 
+
 @pytest.fixture(scope='module')
 def moderator():
     return {
@@ -66,13 +71,16 @@ def moderator():
         'status_active': 'true',
     }
 
+
 @pytest.fixture(scope='module')
 def comment():
     return {'comment': 'Test comment', 'image_id': '1'}
 
+
 @pytest.fixture(scope='module')
 def image():
     return {'description': 'Test image', 'tags': 'test tag'}
+
 
 @pytest.fixture
 def admin_token(client, admin, session, monkeypatch):
@@ -91,6 +99,7 @@ def admin_token(client, admin, session, monkeypatch):
     data = response.json()
     return {'access_token': data['access_token'], 'refresh_token': data['refresh_token'], 'token_type': 'bearer'}
 
+
 @pytest.fixture
 def user_token(client, user, session, monkeypatch):
     mock_send_email = MagicMock()
@@ -108,6 +117,7 @@ def user_token(client, user, session, monkeypatch):
     data = response.json()
     return {'access_token': data['access_token'], 'refresh_token': data['refresh_token'], 'token_type': 'bearer'}
 
+
 @pytest.fixture(scope='function')
 def access_token(client, admin, session, mocker) -> str:
     mocker.patch('src.routes.auth.send_email')
@@ -120,6 +130,7 @@ def access_token(client, admin, session, mocker) -> str:
                            data={'username': admin.get('email'), 'password': admin.get('password')},
                            )
     return response.json()['access_token']
+
 
 @pytest.fixture(scope='function')
 def access_token_user(client, user, session, mocker) -> str:

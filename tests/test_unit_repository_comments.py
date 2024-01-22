@@ -2,7 +2,7 @@ import unittest
 import asyncio
 from asynctest import patch, TestCase, MagicMock
 from unittest.mock import MagicMock, call
-from tests.conftest import TestingSessionLocal
+from tests.conftest_comments import TestingSessionLocal
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from src.database.models import Comment, User, Image
@@ -62,7 +62,6 @@ class AsyncTestComments(TestCase):
         added_comment = await add_comment(comment_model, image_id=1, user=self.user, db=self.mock_session)
         result = await remove_comment(comment_id=added_comment.id, user=self.user, db=self.mock_session)
         self.assertEqual(result, {"message": messages.COMMENT_DELETED})
-
     
     async def test_remove_comment_not_found(self):
         with self.assertRaises(HTTPException) as exc_info:
@@ -70,8 +69,6 @@ class AsyncTestComments(TestCase):
         print(f"Exception: {exc_info.exception}")
         self.assertEqual(exc_info.exception.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(exc_info.exception.detail, messages.MSC404_COMMENT_NOT_FOUND)
-
-
 
     async def test_get_comments_by_image_found(self):
         image_id = 1
@@ -93,7 +90,6 @@ class AsyncTestComments(TestCase):
         self.assertEqual(result[1].image_id, image_id)
         self.assertEqual(result[1].comment, "Comment 2")
 
-        
     async def test_get_comments_by_image_not_found(self):
         image_id = 1
         self.mock_session.query.return_value.filter_by.return_value.first.return_value = None
@@ -120,7 +116,6 @@ class AsyncTestComments(TestCase):
         self.assertEqual(retrieved_comment.id, added_comment.id)
         self.assertEqual(retrieved_comment.comment, added_comment.comment)
 
-
     async def test_get_comments(self):
         image_id = 1
         mock_query = self.mock_session.query.return_value.filter_by.return_value
@@ -131,7 +126,5 @@ class AsyncTestComments(TestCase):
         self.assertEqual(comments, [])   
 
 
-
 if __name__ == '__main__':
     asyncio.run(unittest.main(), debug=True)
-
