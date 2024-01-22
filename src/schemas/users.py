@@ -58,3 +58,8 @@ class ChangeRoleModel(BaseModel):
 
 class ResponseBanned(BaseModel):
     message: str = Field(max_length=2000)
+
+
+class ChangePasswordModel(BaseModel):
+    current_password: str
+    new_password: str

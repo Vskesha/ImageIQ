@@ -1,6 +1,7 @@
 from fastapi import Request, Depends, HTTPException, status, APIRouter, Security, BackgroundTasks
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer, OAuth2PasswordRequestForm
+from fastapi_limiter.depends import RateLimiter
 from sqlalchemy.orm import Session
 from starlette.responses import RedirectResponse
 from starlette.templating import _TemplateResponse, Jinja2Templates
@@ -9,7 +10,7 @@ from src.conf import messages
 from src.database.db import get_db
 from src.database.models import User
 from src.repository import users as repository_users
-from src.schemas.users import UserModel, UserResponse, TokenModel, RequestEmail
+from src.schemas.users import UserModel, UserResponse, TokenModel, RequestEmail, ChangePasswordModel, MessageResponse
 from src.services.auth import auth_service
 from src.services.email import send_email, send_new_password, send_reset_password
 
@@ -77,6 +78,34 @@ async def login(body: OAuth2PasswordRequestForm = Depends(), db: Session = Depen
     refresh_token = await auth_service.token_manager.create_refresh_token(data={"sub": user.email})
     await repository_users.update_token(user, refresh_token, db)
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+
+
+@router.post("/change_password",
+             dependencies=[Depends(RateLimiter(times=5, seconds=60))],
+             status_code=status.HTTP_200_OK,
+             description="Change password of a user",
+             response_model=MessageResponse)
+async def change_password(body: ChangePasswordModel,
+                          current_user: User = Depends(auth_service.token_manager.get_current_user),
+                          db: Session = Depends(get_db)) -> MessageResponse:
+    """
+        The change_password function is used to change the password of a user.
+            The function takes in the current_user, body (which is the ChangePasswordModel), and db as parameters.
+            It first checks to see if the current_password matches the password in the ChangePasswordModel.
+            If so, it updates the password of the user in the database.
+
+        :param body: ChangePasswordModel: Get the current_password and new_password from the request body
+        :param current_user: User: Get the current_user from the token
+        :param db: Session: Get a database session
+    """
+    if not auth_service.password_manager.verify_password(body.current_password, current_user.password):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid current password")
+    new_password = auth_service.password_manager.get_password_hash(body.new_password)
+    user = await repository_users.change_password_for_user(current_user, new_password, db)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Password change failed")
+    await auth_service.token_manager.clear_user_cash(user.email)
+    return MessageResponse(message="Password changed successfully")
 
 
 @router.get('/refresh_token', response_model=TokenModel)
@@ -162,6 +191,7 @@ async def email_confirm_complete(request: Request) -> _TemplateResponse:
     """
     return templates.TemplateResponse("email_confirm_complete.html", {"request": request,
                                                                       "title": messages.MSG_SENT_PASSWORD})
+
 
 @router.get("/email-confirm/done", response_class=HTMLResponse, description="Request password reset Page")
 async def email_confirm_done(request: Request) -> _TemplateResponse:
