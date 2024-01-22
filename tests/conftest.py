@@ -1,22 +1,29 @@
 from unittest.mock import MagicMock
+from typing import Optional
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
+from unittest.mock import AsyncMock
 from main import app
 from src.database.models import Base, Role, User
 from src.database.db import get_db
 
-SQLALCHEMY_DATABASE_URL = 'postgresql://user:password@localhost/dbname'
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={'check_same_thread': False})
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 @pytest.fixture(scope='module')
 def session():
+    # Create the database
+
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
+
     db = TestingSessionLocal()
     try:
         yield db
@@ -24,27 +31,40 @@ def session():
         db.close()
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def client(session):
     def override_get_db():
         try:
             yield session
         finally:
             session.close()
-
     app.dependency_overrides[get_db] = override_get_db
     yield TestClient(app)
+
+
+@pytest.fixture()
+def mock_ratelimiter(monkeypatch):
+    mock_rate_limiter = AsyncMock()
+    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.redis", mock_rate_limiter)
+    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.identifier", mock_rate_limiter)
+    monkeypatch.setattr("fastapi_limiter.FastAPILimiter.http_callback", mock_rate_limiter)
+    # mock_redis = MagicMock(return_value=None)
+    # monkeypatch.setattr("src.services.auth.auth_service.token_manager.r.delete", mock_redis)
+    # monkeypatch.setattr("src.services.auth.auth_service.token_manager.r.set", mock_redis)
+    # monkeypatch.setattr("src.services.auth.auth_service.token_manager.r.get", mock_redis)
+    # monkeypatch.setattr("src.services.auth.auth_service.token_manager.r.expire", mock_redis)
 
 
 @pytest.fixture(scope='module')
 def admin():
     return {
         'id': 1,
-        'username': 'admin', 
-        'email': 'example@example.com', 
+        'username': 'admin',
+        'email': 'example@example.com',
         'password': 'Qwerty@1',
         'roles': 'admin',
         'status_active': 'true',
+        'confirmed': 'true'
     }
 
 
@@ -57,6 +77,7 @@ def user():
         'password': 'Qwerty@1',
         'roles': 'user',
         'status_active': 'true',
+        'confirmed': 'true'
     }
 
 
@@ -75,16 +96,19 @@ def admin_token(client, admin, session, monkeypatch):
     mock_send_email = MagicMock()
     monkeypatch.setattr('src.routes.auth.send_email', mock_send_email)
     client.post('/api/auth/signup', json=admin)
-    current_user: User = session.query(User).filter_by(email=admin.get('email')).first()
+
+    current_user: Optional[User] = session.query(User).filter_by(email=admin.get('email')).first()
     current_user.id = 1
     current_user.confirmed = True
     current_user.roles = Role.admin
     session.commit()
+
     response = client.post(
         '/api/auth/login',
         data={'username': admin.get('email'), 'password': admin.get('password')},
     )
     data = response.json()
+    # return data['access_token']
     return {'access_token': data['access_token'], 'refresh_token': data['refresh_token'], 'token_type': 'bearer'}
 
 
@@ -93,42 +117,53 @@ def user_token(client, user, session, monkeypatch):
     mock_send_email = MagicMock()
     monkeypatch.setattr('src.routes.auth.send_email', mock_send_email)
     client.post('/api/auth/signup', json=user)
-    current_user: User = session.query(User).filter_by(email=user.get('email')).first()
+
+    current_user: Optional[User] = session.query(User).filter_by(email=user.get('email')).first()
     current_user.id = 2
     current_user.confirmed = True
     current_user.roles = Role.user
     session.commit()
+
     response = client.post(
         '/api/auth/login',
         data={'username': user.get('email'), 'password': user.get('password')},
     )
     data = response.json()
+    # return data['access_token']
     return {'access_token': data['access_token'], 'refresh_token': data['refresh_token'], 'token_type': 'bearer'}
 
 
 @pytest.fixture(scope='function')
-def access_token(client, admin, session, mocker) -> str:
-    mocker.patch('src.routes.auth.send_email')
+def access_token(client, admin, session, monkeypatch) -> str:
+    mock_send_email = MagicMock()
+    monkeypatch.setattr("src.routes.auth.send_email", mock_send_email)
+
     client.post('/api/auth/signup', json=admin)
-    current_user: User = session.scalar(select(User).filter(User.email == admin['email']))
+
+    current_user: Optional[User] = session.scalar(select(User).filter(User.email == admin['email']))
     current_user.confirmed = True
     session.commit()
+
     response = client.post(
-                           '/api/auth/login',
-                           data={'username': admin.get('email'), 'password': admin.get('password')},
-                           )
+        '/api/auth/login',
+        data={'username': admin.get('email'), 'password': admin.get('password')},
+    )
     return response.json()['access_token']
 
 
 @pytest.fixture(scope='function')
-def access_token_user(client, user, session, mocker) -> str:
-    mocker.patch('src.routes.auth.send_email')
+def access_token_user(client, user, session, monkeypatch) -> str:
+    mock_send_email = MagicMock()
+    monkeypatch.setattr("src.routes.auth.send_email", mock_send_email) # mocker
+
     client.post('/api/auth/signup', json=user)
-    current_user: User = session.scalar(select(User).filter(User.email == user['email']))
+
+    current_user: Optional[User] = session.scalar(select(User).filter(User.email == user['email']))
     current_user.confirmed = True
     session.commit()
+
     response = client.post(
-                           '/api/auth/login',
-                           data={'username': user.get('email'), 'password': user.get('password')},
-                           )
+        '/api/auth/login',
+        data={'username': user.get('email'), 'password': user.get('password')},
+    )
     return response.json()['access_token']

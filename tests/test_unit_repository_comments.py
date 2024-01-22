@@ -95,7 +95,6 @@ class AsyncTestComments(TestCase):
         added_comment = await add_comment(comment_model, image_id=1, user=self.user, db=self.mock_session)
         result = await remove_comment(comment_id=added_comment.id, user=self.user, db=self.mock_session)
         self.assertEqual(result, {"message": messages.COMMENT_DELETED})
-
     
     async def test_remove_comment_not_found(self):
         comment_id = 999
@@ -169,7 +168,6 @@ class AsyncTestComments(TestCase):
         self.assertEqual(retrieved_comment.id, added_comment.id)
         self.assertEqual(retrieved_comment.comment, added_comment.comment)
 
-
     async def test_get_comments(self):
         image_id = 1
         mock_query = self.mock_session.query.return_value.filter_by.return_value
@@ -180,7 +178,5 @@ class AsyncTestComments(TestCase):
         self.assertEqual(comments, [])   
 
 
-
 if __name__ == '__main__':
     asyncio.run(unittest.main(), debug=True)
-

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
@@ -21,6 +22,12 @@ class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes = True)
 
 
+class ProfileResponse(UserResponse):
+    created_at: datetime
+    comments_count: int
+    images_count: int
+
+
 class TokenModel(BaseModel):
     access_token: str
     refresh_token: str
@@ -33,3 +40,26 @@ class RequestEmail(BaseModel):
 
 class MessageResponse(BaseModel):
     message: str = Field(max_length=2000)
+
+
+class UpdateProfile(BaseModel):
+    username: str | None = Field(min_length=2, max_length=16)
+
+
+class UpdateFullProfile(UpdateProfile):
+    username: Optional[str]
+    email: EmailStr | str
+
+
+class ChangeRoleModel(BaseModel):
+    user_id: int
+    user_role: Role
+
+
+class ResponseBanned(BaseModel):
+    message: str = Field(max_length=2000)
+
+
+class ChangePasswordModel(BaseModel):
+    current_password: str
+    new_password: str

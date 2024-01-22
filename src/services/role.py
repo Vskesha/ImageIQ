@@ -34,9 +34,9 @@ class RoleAccess:
         :param current_user: User: Get the user from the token
         :return: A function
         """
-        print(request.method, request.url)
-        print(f"User role {current_user.role}")
-        print(f"Allowed roles {self.allowed_roles}")
+        # print(request.method, request.url)
+        # print(f"User role {current_user.role}")
+        # print(f"Allowed roles {self.allowed_roles}")
         if current_user.role not in self.allowed_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN, detail="Operation forbidden"
@@ -45,3 +45,4 @@ class RoleAccess:
 
 allowed_all_roles_access = RoleAccess([Role.admin, Role.moderator, Role.user])
 allowed_admin_moderator = RoleAccess([Role.admin, Role.moderator])
+allowed_admin = RoleAccess([Role.admin])

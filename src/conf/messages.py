@@ -34,3 +34,7 @@ RATING_ALREADY_EXISTS = "Rating already exists"
 NOT_ALLOWED = "Not allowed"
 COMMENT_DELETED = "Comment deleted"
 MSC404_COMMENT_NOT_FOUND = "Comment Not Found"
+USER_NOT_FOUND = "User not found"
+MSC403_FORBIDDEN = 'Operation forbidden.'
+USER_ROLE_NOT_UPDATED = "Not`updated"
+YOU_ARE_BANNED = "You are banned"
