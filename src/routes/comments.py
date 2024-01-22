@@ -24,7 +24,7 @@ security = HTTPBearer()
     description="Get a specific comment by its ID.\nNo more than 12 requests per minute.",
     dependencies=[
         Depends(allowed_all_roles_access),
-        Depends(RateLimiter(times=12, seconds=60))
+        Depends(RateLimiter(times=12, seconds=60)),
     ],
     response_model=CommentResponse,
 )
@@ -186,4 +186,3 @@ async def remove_comment(
     message = await repository_comments.remove_comment(comment_id, current_user, db)
 
     return message
-
