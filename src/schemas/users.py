@@ -54,3 +54,7 @@ class UpdateFullProfile(UpdateProfile):
 class ChangeRoleModel(BaseModel):
     user_id: int
     user_role: Role
+
+
+class ResponseBanned(BaseModel):
+    message: str = Field(max_length=2000)

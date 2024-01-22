@@ -11,6 +11,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
+from src.conf import messages
 from src.conf.config import settings
 from src.database.db import get_db
 from src.repository import users as repository_users
@@ -124,6 +125,7 @@ class TokenManager:
         Перевіряє, чи токен дійсний (не анульований).
         """
         return token not in self.invalid_tokens
+
     async def get_current_user(self, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
         """
         The get_current_user function is a dependency that will be used in the
@@ -156,7 +158,6 @@ class TokenManager:
         except JWTError as e:
             raise credentials_exception
 
-
         user = self.r.get(f"user:{email}")
         if user is None:
             user = await repository_users.get_user_by_email(email, db)
@@ -164,9 +165,20 @@ class TokenManager:
                 raise credentials_exception
             self.r.set(f"user:{email}", pickle.dumps(user))
             self.r.expire(f"user:{email}", 900)
+            print('User taken from database')
 
         else:
             user = pickle.loads(user)
+            print('User taken from redis cache')
+
+        print(f'{user.id=}')
+        print(f'{user.username=}')
+        print(f'{user.status_active=}')
+        if not user.status_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=messages.YOU_ARE_BANNED,
+            )
 
         if user is None:
             raise credentials_exception
@@ -289,7 +301,7 @@ class TokenManager:
         :return: None
         :doc-author: Trelent
         """
-        self.r.delete(user_email)
+        self.r.delete(f"user:{user_email}")
 
 
 class AuthService:
