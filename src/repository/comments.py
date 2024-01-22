@@ -5,11 +5,12 @@ from fastapi import HTTPException, status
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
-from src.database.models import Comment, User, Image
+from src.database.models import Comment, User
 from src.conf import messages
-from src.schemas.images import CommentModel, SortDirection, CommentModel
+from src.schemas.images import SortDirection, CommentModel
 
 logger = logging.getLogger(__name__)
+
 
 async def add_comment(
     body: CommentModel, image_id: int, user: User, db: Session
@@ -110,34 +111,6 @@ async def get_comments(image_id, db) -> List[Comment]:
     :return: All comments associated with a particular image
     """
     return db.query(Comment).filter_by(image_id=image_id).all()
-
-
-
-
-async def get_comments_by_image(image_id: int, db: Session) -> List[Comment]:
-    try:
-        image = db.query(Image).filter_by(id=image_id).first()
-
-        if image:
-            # Вивести image_id перед викликом фільтрації коментарів
-            logger.debug(f"Searching for comments with image_id={image_id}")
-
-            comments = db.query(Comment).filter_by(image_id=image_id).all()
-
-            # Вивести кількість знайдених коментарів
-            logger.debug(f"Found {len(comments)} comments for image_id={image_id}")
-
-            return comments
-        else:
-            # Вивести повідомлення, якщо зображення не знайдено
-            logger.warning(f"Image not found for image_id={image_id}")
-            return {"detail": "Image not found"}
-    except Exception as e:
-        # Логування будь-яких винятків для подальшого аналізу
-        logger.error(f"An error occurred: {str(e)}")
-        raise
-
-
 
 
 async def get_comment_by_id(comment_id: int, db: Session) -> Type[Comment]:
