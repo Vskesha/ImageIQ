@@ -39,6 +39,8 @@ redis = "^5.0.1"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
 sphinx = "^7.2.6"
+aiomock = "^0.1.0"
+asynctest = "^0.13.0"
 
 [build-system]
 requires = ["poetry-core"]
