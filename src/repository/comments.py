@@ -1,4 +1,3 @@
-import logging
 from typing import Optional, List, Type
 
 from fastapi import HTTPException, status
@@ -8,8 +7,6 @@ from sqlalchemy.orm import Session
 from src.database.models import Comment, User
 from src.conf import messages
 from src.schemas.images import SortDirection, CommentModel
-
-logger = logging.getLogger(__name__)
 
 
 async def add_comment(
