@@ -4,7 +4,7 @@ from asynctest import patch, TestCase, MagicMock
 from unittest.mock import MagicMock, call
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from tests.conftest import TestingSessionLocal
+from tests.conftest_comments import TestingSessionLocal
 from src.database.models import Comment, User, Image
 from src.schemas.images import CommentModel, SortDirection
 from src.repository.comments import (
