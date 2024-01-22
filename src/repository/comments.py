@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from src.database.models import Comment, User
 from src.conf import messages
-from src.schemas.images import SortDirection, CommentModel
+from src.schemas.images import CommentModel, SortDirection
 
 
 async def add_comment(
