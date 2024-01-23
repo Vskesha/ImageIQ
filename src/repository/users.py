@@ -43,7 +43,6 @@ async def update_cache_user(user: User, cache = None):
     If the cache is provided, it will save the user to Redis with a key of &quot;user:&lt;email&gt;&quot;.
     The value will be pickled so that we can store arbitrary Python objects in Redis.
     We also set an expiration time of 900 seconds (15 minutes) on this key.
-
     :param user: User: Pass in the user object
     :param cache: Pass in the cache object
     :return: A coroutine, which is a special object that can be used with await or yield from
@@ -63,7 +62,6 @@ async def get_user_by_email(email: str, db: Session) -> User | None:
     The get_user_by_email function takes in an email and a database session,
     and returns the user with that email if it exists. If no such user exists,
     it returns None.
-
     :param email: str: Specify the email of the user we want to retrieve from our database
     :param db: Session: Pass the database session to the function
     :return: The first user that matches the email
@@ -74,7 +72,6 @@ async def get_user_by_email(email: str, db: Session) -> User | None:
 async def get_user_by_id(user_id: int, db: Session) -> Optional[User]:
     """
     The get_user_by_id function returns a user object from the database, given an id.
-
     :param user_id: int: Specify the type of data that is expected to be passed into the function
     :param db: Session: Pass in the database session that is created in the main
     :return: The first user in the database with a matching id
@@ -103,13 +100,13 @@ async def update_token(user: User, token: str | None, db: Session) -> None:
     """
     The update_token function updates the refresh token for a user.
     Args:
-        user (UserModel): The UserModel object to update.
-        refresh_token (str): The new refresh token to use for this user.
-        db (Session): A database session object used to commit changes.
-        :param user: UserModel: Pass in the user object that is returned from the get_user function
-        :param token: Update the refresh_token in the database
-        :param db: Session: Access the database
-        :return: The user object
+    user (UserModel): The UserModel object to update.
+    refresh_token (str): The new refresh token to use for this user.
+    db (Session): A database session object used to commit changes.
+    :param user: UserModel: Pass in the user object that is returned from the get_user function
+    :param token: Update the refresh_token in the database
+    :param db: Session: Access the database
+    :return: The user object
     """
     user.refresh_token = token
     db.commit()

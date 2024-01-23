@@ -184,10 +184,9 @@ async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, r
 async def email_confirm_complete(request: Request) -> _TemplateResponse:
     """
     The email_confirm_complete function is used to confirm the email address of a user.
-        It takes in a request object and returns an HTML template response with the title &quot;Email Confirmation Complete&quot;.
+    It takes in a request object and returns an HTML template response with the title &quot;Email Confirmation Complete&quot;.
     :param request: Request: Get the request object
     :return: A message that the password has been sent to your email
-    :doc-author: Trelent
     """
     return templates.TemplateResponse("email_confirm_complete.html", {"request": request,
                                                                       "title": messages.MSG_SENT_PASSWORD})
@@ -202,7 +201,6 @@ async def email_confirm_done(request: Request) -> _TemplateResponse:
 
     :param request: Request: Get the request object
     :return: A template response object
-    :doc-author: Trelent
     """
     return templates.TemplateResponse("email_confirm_done.html", {"request": request,
                                                                   "title": messages.MSG_SENT_PASSWORD})
@@ -223,7 +221,6 @@ async def reset_password_confirm(token: str, background_tasks: BackgroundTasks, 
     :param request: Request: Get the base url of the application
     :param db: Session: Get the database session
     :return: A dictionary with the token and username
-    :doc-author: Trelent
     """
     email: str = auth_service.token_manager.get_email_from_token(token)
     exist_user = await repository_users.get_user_by_email(email, db)
@@ -261,7 +258,6 @@ async def reset_password(body: RequestEmail, background_tasks: BackgroundTasks, 
     :param request: Request: Get the base url of the application
     :param db: Session: Get the database session
     :return: A jsonresponse object
-    :doc-author: Trelent
     """
     user = await repository_users.get_user_by_email(body.email, db)
     if user:
@@ -280,7 +276,6 @@ async def reset_password_done(request: Request) -> _TemplateResponse:
 
     :param request: Request: Get the user's email address
     :return: A templateresponse object that renders the password_reset_done
-    :doc-author: Trelent
     """
     return templates.TemplateResponse("password_reset_done.html", {"request": request,
                                                                    "title": messages.MSG_SENT_PASSWORD})

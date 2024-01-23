@@ -35,7 +35,6 @@ async def get_all_ratings(
 ) -> List[Type[Rating]]:
     """
     The get_all_ratings function returns a list of all ratings for the image with the given ID.
-    
     :param image_id: int: Specify the id of the image to get all ratings for
     :param db: Session: Pass the database session to the repository layer
     :param current_user: User: Get the user that is currently logged in
@@ -69,7 +68,6 @@ async def get_rating(
 ) -> AverageRatingResponse:
     """
     The get_rating function returns the average rating of an image.
-    
     :param image_id: int: Get the image id from the url path
     :param db: Session: Pass the database session to the repository function
     :param current_user: User: Get the user who is making the request
@@ -104,7 +102,6 @@ async def add_rating(
 ) -> Rating:
     """
     The add_rating function creates a new rating for an image.
-    
     :param body: RatingModel: Get the rating value from the request body
     :param image_id: int: Get the id of the image that is being rated
     :param db: Session: Pass the database session to the function
@@ -157,9 +154,8 @@ async def remove_rating(
 ) -> dict:
     """
     The remove_rating function removes a rating from the database.
-        The function takes in an integer representing the id of the rating to be removed,
-        and returns a dictionary containing a message indicating that the removal was successful.
-    
+    The function takes in an integer representing the id of the rating to be removed,
+    and returns a dictionary containing a message indicating that the removal was successful.
     :param rating_id: int: Get the id of the rating that will be removed
     :param db: Session: Get the database session
     :param current_user: User: Get the user id of the current user

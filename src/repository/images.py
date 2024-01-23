@@ -19,7 +19,6 @@ async def get_images_all(
 
     """
     The get_images_all function returns a list of all images in the database.
-
     :param db: Session: Pass the database session to the function
     :param pagination_params: Params: Pass the pagination parameters to the function
     :return: A page of images
@@ -38,7 +37,6 @@ async def get_images_by_user(
 
     """
     The get_images_by_user function returns a list of images that belong to the current user.
-
     :param db: Session: Get access to the database
     :param current_user: User: Pass the current user into the function
     :param pagination_params: Params: Specify the pagination parameters
@@ -57,7 +55,6 @@ async def get_image(
     """
     The get_image function takes in an image_id, a user, and a database session.
     It returns the Image object with the given id if it exists.
-
     :param image_id: int: Specify the image id that is being requested
     :param user: dict: Pass the user's information to the function
     :param db: Session: Access the database

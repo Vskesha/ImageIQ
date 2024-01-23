@@ -46,7 +46,6 @@ async def update_comment(
     body (CommentModel): The updated Comment object with new values for its attributes.
     This is passed as JSON from the client and converted into a CommentModel object by Pydantic's BaseModel class.
     See models/comment_model for more information on how this works, or visit https://pydantic-docs.helpmanual.io/.
-
     :param comment_id: int: Identify the comment to be deleted
     :param body: CommentModel: Get the comment from the request body
     :param user: dict: Check if the user is authorized to delete a comment
@@ -125,14 +124,13 @@ async def get_comment_by_id(comment_id: int, db: Session) -> Type[Comment]:
 async def get_comments_by_image(image_id: int, sort_direction: SortDirection, db: Session) -> List[Type[Comment]]:
     """
     The get_comments_by_image function returns a list of comments for the image with the given id.
-        Args:
-            image_id (int): The id of an image in the database.
-            db (Session): A database session object to query from.
+    Args:
+    image_id (int): The id of an image in the database.
+    db (Session): A database session object to query from.
     :param image_id: int: Filter the comments by image id
     :param sort_direction: SortDirection: The sort direction of the comments
     :param db: Session: Pass the database session into the function
     :return: A list of comments that are associated with a specific image
-    :doc-author: Trelent
     """
     query = db.query(Comment).filter_by(image_id=image_id)
     if sort_direction == SortDirection.desc:
@@ -141,3 +139,4 @@ async def get_comments_by_image(image_id: int, sort_direction: SortDirection, db
         comments = query.order_by(Comment.id).all()
 
     return comments
+

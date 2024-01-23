@@ -1,6 +1,9 @@
 import sys
 import os
+from pathlib import Path
 
+parent = Path(__file__).parent
+parents_parent = Path(__file__).parents[1]
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -8,8 +11,7 @@ import os
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-sys.path.append(os.path.abspath('..'))
-
+sys.path.insert(0, os.path.abspath('../..'))
 
 extensions = ['sphinx.ext.autodoc']
 

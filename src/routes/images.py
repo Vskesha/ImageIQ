@@ -38,7 +38,6 @@ async def get_images_all(
 
         """
         The get_images_all function returns a list of all images in the database.
-
         :param db: Session: Pass the database session to the repository layer
         :param pagination_params: Params: Get the pagination parameters from the request
         :return: A list of images
@@ -64,8 +63,6 @@ async def get_images_by_user(
         """
         The get_images_by_user function returns a list of images that the current user has uploaded.
         The function takes in a pagination_params object, which is used to determine how many images are returned per page and what page number to return.
-
-
         :param db: Session: Access the database
         :param current_user: User: Get the current user from the database
         :param pagination_params: Params: Get the pagination parameters from the request
@@ -92,7 +89,6 @@ async def get_image(
         The get_image function is used to retrieve a single image from the database.
         The function takes in an image_id as a path parameter, and returns an Image object if it exists.
         If no such Image exists, then the function will return None.
-
         :param image_id: int: Get the image id from the path
         :param db: Session: Get the database session
         :param current_user: dict: Get the current user from the database
@@ -162,10 +158,9 @@ async def image_qry(
                     ):
         """
         The image_qry function is used to generate a QR code for the image.
-            The QR code contains the URL of the image, which can be scanned by a mobile device.
-            This function requires an authentication token and returns an HTTP response containing
-            a PNG file with the QR code.
-
+        The QR code contains the URL of the image, which can be scanned by a mobile device.
+        This function requires an authentication token and returns an HTTP response containing
+        a PNG file with the QR code.
         :param image_id: int: Get the image id from the url
         :param db: Session: Get the database session
         :param current_user: dict: Get the current user from the token
@@ -197,7 +192,6 @@ async def create_image(
 
         """
         The create_image function creates a new image in the database.
-
         :param description: str: Set the description of the image
         :param tags: str: Add tags to the image
         :param file: UploadFile: Get the file from the request
@@ -235,7 +229,6 @@ async def remove_image(
         """
         The remove_image function removes an image from the database.
         The function takes in an image_id and a database session, and returns a dictionary with a message.
-
         :param image_id: int: Get the image id from the path
         :param db: Session: Pass the database session to the repository
         :param current_user: dict: Get the current user from the database
@@ -264,10 +257,9 @@ async def update_image(
                     ) -> Image:
         """
         The update_image function updates an image in the database.
-            The function takes a body of type ImageModel, which is defined in models/image.py, and an image_id of type int as parameters.
-            The function also takes a db Session object from the get_db() dependency injection method, which is defined in crud/base.py;
-                this allows us to access our database session for querying purposes (see https://docs.sqlalchemy.org/en/13/)
-
+        The function takes a body of type ImageModel, which is defined in models/image.py, and an image_id of type int as parameters.
+        The function also takes a db Session object from the get_db() dependency injection method, which is defined in crud/base.py;
+        this allows us to access our database session for querying purposes (see https://docs.sqlalchemy.org/en/13/)
         :param body: ImageModel: Get the data from the request body
         :param image_id: int: Get the image id from the url
         :param db: Session: Get the database session
@@ -299,11 +291,10 @@ async def get_image_by_tag_name(
         """
         The get_image_by_tag_name function returns a list of images that have the tag name specified in the request.
         The function takes three parameters:
-            - tag_name: The name of the tag to search for. This is a required parameter and must be passed as part of
-                        the URL path (e.g., /images/tags/{tag_name}). It is also validated by FastAPI to ensure it meets
-                        certain criteria, such as being at least one character long and not exceeding 100 characters
-                        in length.
-
+        - tag_name: The name of the tag to search for. This is a required parameter and must be passed as part of
+        the URL path (e.g., /images/tags/{tag_name}). It is also validated by FastAPI to ensure it meets
+        certain criteria, such as being at least one character long and not exceeding 100 characters
+        in length.
         :param tag_name: str: Get the tag from the database
         :param sort_direction: SortDirection: Specify the sort direction of the images
         :param db: Session: Pass the database session to the function
