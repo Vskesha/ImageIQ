@@ -289,9 +289,8 @@ async def read_profile_all_users(
 
     """
     The read_profile_all_users function is used to read the profile of all users.
-        This function can only be accessed by an admin user.
-        The function returns a list of dictionaries containing the information for each user.
-
+    This function can only be accessed by an admin user.
+    The function returns a list of dictionaries containing the information for each user.
     :param current_user: User: Get the current user that is logged in
     :param db: Session: Get the database session
     :param : Get the current user
