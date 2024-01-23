@@ -1,0 +1,381 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Instagram Sans UI', sans-serif;
+}
+
+
+.app {
+    display: flex;
+    flex-direction: row;
+    min-height: 100vh;
+    margin: 0;
+    width: 100%;
+}
+
+.sidebar {
+    padding-left: 1em;}
+
+.wrapper {
+    height: 100vh;
+    width: 15%;
+    min-width: 150px;
+    margin-top: 0;
+    padding-top: 0;
+    margin-left: 0;
+    border: 1px solid #8b868663;
+}
+
+
+.part-main {
+    display: flex;
+    flex-direction: column;
+    width: 85%;
+    height: 100vh;
+    align-items:center;}
+
+::selection{
+    background-color: #695CFE;
+    color: #fff;
+}
+
+
+.menu{
+    margin-top: 0.5em;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.menu-bar {
+     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: baseline;
+}
+
+
+.mode .sun-moon i{
+    position: absolute;
+}
+.mode .sun-moon i.sun{
+    opacity: 0;
+}
+
+
+.menu-bar .bottom-content .toggle-switch{
+    position: absolute;
+    right: 0;
+    height: 100%;
+    min-width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.toggle-switch .switch{
+    position: relative;
+    height: 22px;
+    width: 40px;
+    border-radius: 25px;
+    background-color: var(--toggle-color);
+    transition: var(--tran-05);
+}
+
+.switch::before{
+    content: '';
+    position: absolute;
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    background-color: #FFF;
+    transition: var(--tran-04);
+}
+
+.home{
+    position: absolute;
+    top: 0;
+    left: 250px;
+    height: 100vh;
+    width: calc(100% - 250px);
+    background-color: #E4E9F7;
+    transition: var(--tran-05);
+}
+.home .text{
+    font-size: 30px;
+    font-weight: 500;
+    color:  #707070;
+    padding: 12px 60px;
+}
+
+.sidebar.close ~ .home{
+    left: 78px;
+    height: 100vh;
+    width: calc(100% - 78px);
+}
+
+
+.menu-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+i.fa-house, i.fa-magnifying-glass,
+i.fa-bars, i.fa-compass, i.fa-heart,
+i.fa-square-plus, i.fa-message, i.fa-user, i.fa-circle-play
+ {
+    font-size: 1.2em;
+    margin-right: 0.5em;
+    color: black;
+    }
+
+i.fa-solid {background: none;}
+
+
+
+.nav-link {
+    height: 2.7em;
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-top: 0.1em;
+
+}
+
+.nav-link  a{
+    list-style: none;
+    height: 100%;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-radius: 6px;
+    text-decoration: none;
+
+}
+
+
+a.nav-link { color: black;}
+
+
+
+.nav-link  a:hover{
+    background-color: #c8bfbf21;
+}
+
+span.text.nav-text {
+    font-size: 0.8em;
+    font-weight: 300;
+    white-space: nowrap;
+    color: black;
+}
+
+.h1-mb-signin{
+    font-size: 1.4em;
+    color: black;
+    font-weight: 400;
+    letter-spacing: -4px;
+    line-height: 1;
+    text-align: center;
+    padding-bottom: 1em;
+    padding-top: 0.8em;
+}
+
+
+.menu-links li:last-child {
+   padding-top: 6em;
+}
+
+
+
+footer {
+    background-color: white;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    width: 80%;
+    align-items: center;
+    font-size: 0.7em;
+}
+
+
+.header{
+    height: 80vh;
+    width: 100%;
+}
+
+.footer-section li {list-style-type: none;}
+
+
+.footer-content {
+    color: black;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1em;}
+
+.footer-content p {padding-left: 1em;}
+
+.footer-bottom {
+    color: black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1.5em;}
+
+
+
+
+
+.profile-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    width: 100%;
+    align-items: center;
+    margin-top: 1.5em;
+}
+
+
+
+
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    align-items: center;
+}
+
+.profile-picture {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+ul.second, ul.first {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    width: 100%;
+}
+
+
+.profile-picture {
+    border-bottom: 1px solid #8b868663;
+}
+
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+}
+
+ul.second li, ul.first li {
+    margin: 0.5em;
+    padding: 0.3em;
+    list-style-type: none;
+    font-family: 'Instagram Sans UI', sans-serif;
+}
+
+ul.first li:nth-child(2) {
+    background: #948c8c21;
+    border-radius: 8px;
+
+  }
+
+ul.first li:nth-child(3) {
+    background: #948c8c21;
+    border-radius: 8px;
+  }
+
+ul.first li:nth-child(2):hover{
+    background: #0e0e0e21;
+    border-radius: 3px;
+
+  }
+
+ul.first li:nth-child(3):hover{
+    background: #0e0e0e21;
+    border-radius: 3px;
+  }
+
+ul.second li, ul.first li a {
+    font-family: 'Instagram Sans UI', sans-serif;
+    font-size: 0.9em;
+    text-decoration: none;
+    color: black;
+}
+
+ul.profile-stats-list { display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;}
+
+
+ul.profile-stats-list li {
+    font-family: 'Instagram Sans UI', sans-serif;
+    font-size: 0.9em;
+    text-decoration: none;
+    color: black;
+    margin: 1em;
+    list-style: none;
+}
+
+ul.profile-stats-list li a {
+    font-family: 'Instagram Sans UI', sans-serif;
+    font-size: 0.9em;
+    text-decoration: none;
+    color: black;
+}
+
+.image-profile {
+    width: 9em;
+    height: 6.8em;
+    margin-right: 4em;
+    background-color: #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2em;
+}
+
+.image-profile .fa-solid.fa-user {
+     color: white;
+     font-size: 5em;
+     margin: 0 auto;
+ }
+
+.fa-draw-polygon {
+  transform: rotate(90deg);
+}
+
+img {display:block;
+    width: 14em;
+    height: 14em;
+    border: 1px solid black;
+    margin: 0.2em;}
+
+#userImagesContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+

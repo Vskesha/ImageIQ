@@ -65,7 +65,7 @@ async def custom_middleware(request: Request, call_next):
 
 app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")), name="static")
 app.mount("/src", StaticFiles(directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "src")), name="src")
-app.mount("/docs", StaticFiles(directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")), name="docs")
+# app.mount("/docs", StaticFiles(directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")), name="docs")
 
 templates = Jinja2Templates(directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates"))
 
