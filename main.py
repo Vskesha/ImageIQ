@@ -39,7 +39,10 @@ async def startup():
 
     :return: A dictionary, which is used as the context for the app
     """
-    r = await redis.Redis(host=settings.redis_host, port=settings.redis_port, db=0)
+    r = await redis.Redis(
+        host=settings.redis_host,
+        port=settings.redis_port,
+        password=settings.redis_password)
     await FastAPILimiter.init(r)
 
 
