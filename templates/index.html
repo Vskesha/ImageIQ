@@ -1,67 +1,29 @@
-<!DOCTYPE html>
-<html lang="en" class="h-100">
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="generator" content="Hugo 0.84.0">
-    <title>GO IT, WEB PROJECT</title>
-    <link rel="stylesheet" href="static/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="static/client/css/app.css">
 </head>
 <body>
-<div class="cover-container">
-    <div class="cov">
+<div class="container">
+    <div class="row">
         <div class="col">
-            <div class="home-campa"></div>
-            <img class="shine" src="https://github.githubassets.com/assets/git-branch-productivity-c304b83d09c7.svg"
-                 alt="">
-            <div class="home-campa"></div>
+            <h3 style="font-size: 80px">...in the development process...</h3>
+            <ul class="list-group" id="con"></ul>
         </div>
-        <div class="side">
-            <header class="header">
-                <div>
-                    <h3 class="float-md-start">GoIT WEB</h3>
-                    <nav class="nav">
-                        <a class="nav-link" aria-current="page" href="#">Home</a>
-                        <a class="nav-link" target="_blank"
-                           href="https://github.com/AndriyBatig1992/Homework23/">Features</a>
-                        <a class="nav-link" target="_blank"
-                           href="https://github.com/AndriyBatig1992/Homework23">Contact</a>
-                    </nav>
-                </div>
-            </header>
-            <main class="main">
-                <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-                    <h1>{{ title }}</h1>
-                </div>
-                <a href="docs" class="btn">DOC</a>
-            </main>
-        </div>
-        <figure>
-            <div class="sign">
-                <a href="static/client/signin.html" class="btn_top">SIGNIN</a>
-                <a href="static/client/signup.html" class="btn_top">SIGN UP</a>
-            </div>
-            <img class="photo" src="static/1.png" alt="Опис">
-            <figcaption><p class="p-main">Hello, we're  🚀 <span class="developer">web team!</span></p></figcaption>
-            <div class="text-under-photo">
-                <p class="text">We are a group of young and enthusiastic programmers, ready for significant challenges.
-                    Our team includes experienced team leads and Scrum masters, ensuring organized and successful project execution. We collaborate closely to create impressive web solutions.
-                    Let's create together!</p>
-                <p><strong>Name:</strong> Project group 4</p>
-                <p><strong>Phone:</strong> +380670000000</p>
-                <p><strong>E-mail:</strong> aabbbbbb@gmail.com</p>
-                <a class="figcaption" href="https://github.com/AndriyBatig1992">OUR TEAM</a>
-            </div>
-        </figure>
     </div>
-    <footer class="footer">
-        <a class="btn_foot" href="https://github.com/AndriyBatig1992"
-              target="_blank">Goit WEB 16. ©Project group 4</a></footer>
+    <div class="row">
+        <div class="col">
+            <a href="/project" style="font-size: 25px" class="btn btn-primary">About project</a>
+            <a href="/docs" style="font-size: 25px" class="btn btn-primary">Swagger docs</a>
+        </div>
+    </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"></script>
+<script src="js/signin.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>

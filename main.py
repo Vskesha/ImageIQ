@@ -65,11 +65,9 @@ async def custom_middleware(request: Request, call_next):
 
 app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")), name="static")
 app.mount("/src", StaticFiles(directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "src")), name="src")
-
+app.mount("/docs", StaticFiles(directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")), name="docs")
 
 templates = Jinja2Templates(directory=os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates"))
-# app.mount("/docs", StaticFiles(directory=os.path.join(os.path.dirname(os.path.abspath(__file__)),
-# "docs")), name="docs")
 
 
 @app.get('/', response_class=HTMLResponse)
@@ -82,7 +80,18 @@ async def main(request: Request):
     :param request: Request: Get the request object that is passed to the function
     :return: A response object, which is a standard asgi response
     """
-    return templates.TemplateResponse("index.html", {"request": request, "title": "WEB PROJECT"})
+    return templates.TemplateResponse("index.html", {"request": request, "title": "ImageIQ"})
+
+
+@app.get('/project', response_class=HTMLResponse)
+async def project(request: Request):
+    """
+    The project function is the entry point for the project information.
+
+    :param request: Request: Get the request object that is passed to the function
+    :return: A response object, which is a standard asgi response
+    """
+    return templates.TemplateResponse("project.html", {"request": request, "title": "ImageIQ"})
 
 
 @app.get("/api/healthchecker")

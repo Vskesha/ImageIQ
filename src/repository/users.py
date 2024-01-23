@@ -6,7 +6,7 @@ from libgravatar import Gravatar
 from sqlalchemy.orm import Session
 
 from src.conf import messages
-from src.database.models import User
+from src.database.models import User, Role
 from src.schemas.users import UserModel
 from src.services.auth import auth_service
 
@@ -92,7 +92,11 @@ async def create_user(body: UserModel, db: Session):
     :return: A user object, which is a sqlalchemy model
     """
     g = Gravatar(body.email)
-    new_user = User(**body.dict(), avatar=g.get_image())
+
+    existing_user = db.query(User).first()
+    role = Role.user if existing_user else Role.admin
+
+    new_user = User(**body.dict(), avatar=g.get_image(), role=role)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
