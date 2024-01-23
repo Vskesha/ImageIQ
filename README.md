@@ -1,5 +1,5 @@
 # ImageIQ
-
+ImageIQ is a project by the TechStorm team - a photo hosting service with JWT token authentication, user roles, and advanced functionality: photo uploading and editing, commenting, rating, transformations using Cloudinary, and powerful keyword and tag search. User management, administrative options, and a customizable profile for each user make ImageIQ a unique and functional service.
 ## REST API for ImageIQ.
 The main functionality for the REST API is implemented on FastAPI
 
