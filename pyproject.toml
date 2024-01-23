@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "ImageIQ"
+version = "0.0.1"
+description = ""
+authors = [
+    "AndriyBatig1992 <ashabatig1992@gmail.com>",
+    "Olga Sirenko <olga19022020@gmail.com>",
+    "Sonia Dudiy <sonia09012004@gmail.com>",
+    "Vasyl Boliukh <vskesha@gmail.com>"
+]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+aiopath = "0.6.0"
+fastapi-pagination = "^0.12.14"
+qrcode = {extras = ["pil"], version = "^7.4.2"}
+httpx = "^0.26.0"
+asyncpg = "^0.29.0"
+cloudinary = "^1.37.0"
+fastapi-limiter = "^0.1.5"
+fastapi = "^0.108.0"
+fastapi-mail = "^1.4.1"
+uvicorn = "^0.25.0"
+pydantic = {extras = ["email"], version = "^2.5.3"}
+jinja2 = "^3.1.2"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+sqlalchemy = "^2.0.23"
+alembic = "^1.13.1"
+psycopg2-binary = "^2.9.9"
+python-multipart = "^0.0.6"
+libgravatar = "^1.0.4"
+python-dotenv = "^1.0.0"
+pydantic-settings = "^2.1.0"
+redis = "^5.0.1"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+sphinx = "^7.2.6"
+aiomock = "^0.1.0"
+asynctest = "^0.13.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
