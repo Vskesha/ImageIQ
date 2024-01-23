@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     mail_from_name: str = "ImageIQ"
     redis_host: str = "localhost"
     redis_port: int = 6379
-    redis_password: str = None
+    redis_password: str | None = None
     cloudinary_name: str = "cloudinary_name"
     cloudinary_api_key: str = "1111"
     cloudinary_api_secret: str = "1111"
