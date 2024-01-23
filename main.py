@@ -39,7 +39,10 @@ async def startup():
 
     :return: A dictionary, which is used as the context for the app
     """
-    r = await redis.Redis(host=settings.redis_host, port=settings.redis_port, db=0)
+    r = await redis.Redis(
+        host=settings.redis_host,
+        port=settings.redis_port,
+        password=settings.redis_password)
     await FastAPILimiter.init(r)
 
 
@@ -116,4 +119,4 @@ app.include_router(ratings.router, prefix='/api')
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=9000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

@@ -74,7 +74,10 @@ class TokenManager:
     SECRET_KEY = settings.secret_key
     ALGORITHM = settings.algorithm
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
-    r = redis.Redis(host=settings.redis_host, port=settings.redis_port, db=0)
+    r = redis.Redis(
+        host=settings.redis_host,
+        port=settings.redis_port,
+        password=settings.redis_password)
     invalid_tokens = set()
 
     async def create_access_token(self, data: dict, expires_delta: Optional[float] = None):
@@ -165,15 +168,10 @@ class TokenManager:
                 raise credentials_exception
             self.r.set(f"user:{email}", pickle.dumps(user))
             self.r.expire(f"user:{email}", 900)
-            # print('User taken from database')
 
         else:
             user = pickle.loads(user)
-            # print('User taken from redis cache')
 
-        # print(f'{user.id=}')
-        # print(f'{user.username=}')
-        # print(f'{user.status_active=}')
         if not user.status_active:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -289,6 +287,7 @@ class TokenManager:
         user = await repository_users.get_user_by_email(email, db)
         user.refresh_token = None
         db.commit()
+        db.refresh(user)
 
     async def clear_user_cash(self, user_email) -> None:
         """
