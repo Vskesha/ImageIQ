@@ -23,11 +23,8 @@ form.addEventListener('submit', async (e) => {
             const result = await response.json();
             localStorage.setItem('accessToken', result.access_token);
             localStorage.setItem('refreshToken', result.refresh_token);
-//            window.location = '/src/services/templates/email_confirm.html';
-            const token = result.access_token;
+            window.location = '/src/services/templates/email_confirm_complete.html';
 
-            // Здійснити перехід за адресою `/api/auth/confirmed_email/${token}`
-            window.location = `${BASE_URL}/api/auth/confirmed_email/${token}`;
         } else {
             const errorResult = await response.json();
             console.error('Registration failed:', errorResult.detail);
@@ -39,7 +36,7 @@ form.addEventListener('submit', async (e) => {
 
 
 
-//let currentUrl = window.location.href;
-//if (currentUrl.includes("/email-confirm/done")) {
-//    window.location.href = `${BASE_URL}/static/client/signin.html`;
-//}
+let currentUrl = window.location.href;
+if (currentUrl.includes("/email-confirm/done")) {
+    window.location.href = `${BASE_URL}/static/client/signin.html`;
+}
