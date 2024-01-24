@@ -9,24 +9,41 @@ function updatePageWithUserImages(imagesData, accessToken) {
         imagesData.items.forEach(image => {
             const imageContainer = document.createElement('div');
             imageContainer.classList.add('image-container');
+
+            const imageLink = document.createElement('a');
+            imageLink.href = image.link;
+            imageLink.target = '_blank';
+
             const imageElement = document.createElement('img');
             imageElement.src = image.link;
             imageElement.alt = image.description;
 
+            imageLink.appendChild(imageElement);
+
             const descriptionElement = document.createElement('p');
-            descriptionElement.innerText = `Description: ${image.description}`;
+            const descriptionStrong = document.createElement('strong');
+            descriptionStrong.innerText = 'Description: ';
+            descriptionElement.appendChild(descriptionStrong);
+            descriptionElement.innerHTML += image.description;
 
             const tagsElement = document.createElement('p');
-            tagsElement.innerText = 'Tags: ';
+            const tagsStrong = document.createElement('strong');
+            tagsStrong.innerText = 'Tags: ';
+            tagsElement.appendChild(tagsStrong);
 
             if (Array.isArray(image.tags) && image.tags.length > 0) {
-                image.tags.forEach(tag => {
+                image.tags.forEach((tag, index) => {
                     const tagSpan = document.createElement('span');
                     tagSpan.innerText = tag.name;
+                    if (index < image.tags.length - 1) {
+                        tagSpan.innerText += ', ';
+                    }
                     tagsElement.appendChild(tagSpan);
                 });
             } else {
-                tagsElement.innerText += 'No tags';
+                const tagSpan = document.createElement('span');
+                tagSpan.innerText = 'No tags';
+                tagsElement.appendChild(tagSpan)
             }
 
             const deleteButton = document.createElement('button');
@@ -53,7 +70,7 @@ function updatePageWithUserImages(imagesData, accessToken) {
             });
 
             imageContainer.appendChild(deleteButton);
-            imageContainer.appendChild(imageElement);
+            imageContainer.appendChild(imageLink);
             imageContainer.appendChild(descriptionElement);
             imageContainer.appendChild(tagsElement);
 

@@ -81,10 +81,7 @@ async def main(request: Request):
     :param request: Request: Get the request object that is passed to the function
     :return: A response object, which is a standard asgi response
     """
-    static_page_url = "/static/client/main.html"
-
-    # Повертаємо RedirectResponse для перенаправлення
-    return RedirectResponse(url=static_page_url)
+    return templates.TemplateResponse("project.html", {"request": request, "title": "ImageIQ"})
 
 
 @app.get('/project', response_class=HTMLResponse)
