@@ -20,22 +20,11 @@
                 <div class="menu">
                     <ul class="menu-links">
                         <li class="nav-link">
-                            <a href="#">
+                            <a href="/static/client/main.html">
                                 <i class="fa-solid fa-house"></i>
                                 <span class="text nav-text">Main</span>
                             </a>
                         </li>
-                        <li class="nav-link" id="searchLink">
-                            <a href="#">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                                <span class="text nav-text">Search</span>
-                            </a>
-                        </li>
-                        <li class="link-hide" id="link-hide" style="display: none;">
-                            <input type="text" id="tagInput" placeholder="Enter tag name">
-                            <button id="searchButton" >Search by Tag</button>
-                        </li>
-
                         <li class="nav-link">
                             <a href="#">
                                 <i class="fa-regular fa-compass"></i>
@@ -66,12 +55,6 @@
                                 <span class="text nav-text">Сreate</span>
                             </a>
                         </li>
-                        <li class="nav-link">
-                            <a href="#">
-                                <i class="fa-regular fa-user"></i>
-                                <span id="profile-link" class="text nav-text">Profile</span>
-                            </a>
-                        </li>
                          <li class="nav-link">
                             <a href="#">
                                 <i class="fa-solid fa-bars"></i>
@@ -87,56 +70,24 @@
             <div class="profile-wrapper">
               <header class="profile-header">
                 <div class="profile-picture">
-                    <div class="image-profile">
-                         <img id="avatar" src="" alt="User Avatar">
+                    <div class="image-profile_profile">
+                        <img id="avatar_profile" src="" alt="User Avatar">
                     </div>
-                    <div class="profile-actions">
-                        <ul class="first">
+                    <div class="profile-actions_profile">
+                        <ul id="user-details">
                             <li id="username"></li>
-                            <li><a href="#">Edit profile</a></li>
-                            <li><a href="#">View the archive</a></li>
-                            <li><i class="fa-solid fa-gear"></i></li>
-                        </ul>
-                        <ul class="second">
-                            <li>0 posts</li>
-                            <li>Readers: 0</li>
-                            <li>Follows: 0</li>
+                            <li id="email"></li>
+                            <li id="comments_count"></li>
+                            <li id="images_count"></li>
+                            <li id="created_at"></li>
                         </ul>
                     </div>
                 </div>
               </header>
-              <div class="profile-stats">
-                <ul class="profile-stats-list">
-                    <li class="link">
-                        <a href="#">
-                            <i class="fa-solid fa-table"></i>
-                            <span class="text nav-text">POSTS</span>
-                        </a>
-                    </li>
-                    <li class="link">
-                        <a href="#">
-                            <i class="fa-sharp fa-solid fa-draw-polygon"></i>
-                            <span class="text nav-text">SAVED</span>
-                        </a>
-                    </li>
-                    <li class="link">
-                        <a href="#">
-                             <i class="fa-regular fa-circle-user"></i>
-                            <span class="text nav-text">MARKED</span>
-                        </a>
-                    </li>
-                </ul>
-              </div>
-
-            </div>
-            <div id="myModal" class="modal">
-              <div class="modal-content" id="modalContentDiv">
-                <span id="closeModalButton" class="close" onclick="closeModal()">&times;</span>
-                <div id="modalContent"></div>
-              </div>
             </div>
             <div id="userImagesContainer">
             </div>
+
             <footer>
                 <div class="footer-content">
                     <p>Інформація</p>
@@ -157,9 +108,6 @@
         </footer>
         </div>
     </div>
-
-    <script src="js/main.js"></script>
-
-
+    <script src="js/profile.js"></script>
 </body>
 </html>

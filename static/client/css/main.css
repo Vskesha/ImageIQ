@@ -285,6 +285,15 @@ ul.second, ul.first {
     width: 80%;
 }
 
+.profile-actions_profile {
+     display: flex;
+    align-items: center;
+    width: 80%;
+    font-size: 1.1em;
+    font-weight: 700;
+    padding: 1em;
+}
+
 ul.second li, ul.first li {
     margin: 0.5em;
     padding: 0.3em;
@@ -347,19 +356,43 @@ ul.profile-stats-list li a {
     width: 9em;
     height: 6.8em;
     margin-right: 4em;
-    background-color: #ddd;
     border-radius: 50%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    margin-bottom: 2em;
+    margin-top: 1em;
+}
+
+.image-profile_profile {
+    width: 9em;
+    height: 6.8em;
+    margin-right: 4em;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 2em;
+    margin-top: 4em;
+}
+
+#avatar {
+    filter: brightness(1) contrast(1.1);
+    width: 9em;
+    height: 8.8em;
+    margin-right: 4em;
+    border-radius: 50%;
     margin-bottom: 2em;
 }
 
-.image-profile .fa-solid.fa-user {
-     color: white;
-     font-size: 5em;
-     margin: 0 auto;
- }
+
+
+#avatar_profile {
+    filter: brightness(1.5.1) contrast(2.1);
+    width: 12em;
+    height: 10.8em;
+    margin-right: 4em;
+    border-radius: 50%;
+    margin-bottom: 2em;
+}
 
 .fa-draw-polygon {
   transform: rotate(90deg);
@@ -379,3 +412,85 @@ img {display:block;
     justify-content: center;
 }
 
+#user-details li{
+list-style: none;
+padding: 0.5em;}
+
+
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    background-color: #fefefe;
+    align-items: center;
+    margin: 10% auto;
+    padding: 0.7em;
+    width: 30em;
+    border-radius: 1em;
+    border: 1px solid black;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  padding: 5px;
+  font-weight: bold;
+  align-self: end;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
+.link-hide {
+    height: 2.7em;
+    list-style: none;
+    width: 80%;
+    margin-top: 0.1em;
+
+}
+
+
+#tagInput { width: 75%;}
+
+#searchButton {
+margin-top: 0.3em;
+margin-bottom: 0.3em;
+background: #50cb50;
+border-radius: 0.8em;
+padding: 0.5em;}
+
+a.link-hide { color: black;}
+
+
+.image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;}
+
+.image-container button {
+    align-self: end;
+    background: #df6161;
+    border-radius: 23em;
+    font-size: 0.61em;
+    width: 1.7em;}
+
+
+.image-container p {
+    font-weight 500;}
