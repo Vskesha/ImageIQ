@@ -11,7 +11,7 @@ document.getElementById("confirmEmailBtn").addEventListener("click", function (e
             if (xhr.status === 200) {
                 setTimeout(function () {
                     emailInput.value = "";
-                    window.location.href = "/api/auth/email-confirm/complate";
+                    window.location.href = "/api/auth/email-confirm/complete";
                 }, 100);
             } else {
                 handleErrorResponse(xhr);

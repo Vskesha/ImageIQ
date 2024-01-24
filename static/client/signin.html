@@ -3,42 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+          content="width=device-width, user-scalable=no, initial-scale=0.85, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ title}}</title>
     <link rel="stylesheet" href="/static/client/css/style.css">
 </head>
 <body class="text-center">
-    <main class="form-signin">
-        <form autocomplete="off">
-            <h1 class="h1_mb">Please sign in</h1>
-            <div class="form-floating">
-                <label for="floatingInput">Email adress</label>
-                <input
-                    type="email"
-                    class="form-control"
-                    id="floatingInput"
-                    placeholder="name@example.com"
-                    name="username"
-                    required/>
+    <div class="main_top">
+        <img class="photo_tel" src="/static/client/images/photo2.png" alt="Опис">
+        <main class="form-signin">
+            <form class="form-signin-signin" autocomplete="off">
+                <h1 class="h1-mb-signin">𝓟𝓱𝓸𝓽𝓸𝓼𝓱𝓪𝓻𝓮</h1>
+                <div class="form-floating">
+                    <input
+                        type="email"
+                        class="form-control"
+                        id="floatingInput"
+                        placeholder="name@example.com"
+                        name="username"
+                        required/>
+                </div>
+                <div class="form-floating">
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="floatingPassword"
+                        placeholder="password"
+                        name="password"
+                        required/>
+                </div>
+                <button id="profile-button" class="btn_signin" type="submit">Sign in</button>
+                <div style="display: flex; align-items: center; padding-top: 2em;">
+                  <hr style="flex: 1; margin-right: 10px; color: black; width: 5em;">
+                  <span>or</span>
+                  <hr style="flex: 1; margin-left: 10px; color: black;   width: 5em;">
+                </div>
+                <div class="small-text-center">
+                      <a href="/src/services/templates/reset_password.html" class="text-center"><i>Forgot Password?</i></a>
+                </div>
+            </form>
+            <div class="down">
+                <p>Не маєте облікового запису? <a href="signup.html">Зареєструйтеся</a></p>
             </div>
-            <div class="form-floating">
-                <label id="label" for="floatingPassword">Password</label>
-                <input
-                    type="password"
-                    class="form-control"
-                    id="floatingPassword"
-                    placeholder="password"
-                    name="password"
-                    required/>
-            </div>
-            <button class="btn_signin" type="submit">Sign in</button>
-            <div class="small-text-center">
-                  <a href="/src/services/templates/reset_password.html" class="text-center"><i>Forgot Password?</i></a>
-            </div>
-            <p class="p_signin">&copy; 2023</p>
-        </form>
-    </main>
-    <script src="/static/client/js/signin.js"></script>
+        </main>
+        <script src="/static/client/js/signin.js"></script>
+    </div>
+    <footer>
+        <p class="p_signin">&copy; 2024 Photoshare</p>
+    </footer>
+
 </body>
 </html>
