@@ -4,7 +4,10 @@ ImageIQ is a project by the TechStorm team - a photo hosting service with JWT to
 The main functionality for the REST API is implemented on FastAPI
 
 ## Links:
-
+#### https://imageiq-vscorp.koyeb.app/ - ImageIQ main page
+#### https://imageiq-vscorp.koyeb.app/project - about the project
+#### https://imageiq-vscorp.koyeb.app/docs - swagger documentation
+#### https://github.com/Vskesha/ImageIQ - project repository
 ## General description:
 
 ### Authentication
