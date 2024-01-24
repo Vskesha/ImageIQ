@@ -21,6 +21,8 @@ form.addEventListener('submit', async (e) => {
             const result = await response.json();
             localStorage.setItem('accessToken', result.access_token);
             localStorage.setItem('refreshToken', result.refresh_token);
+            localStorage.setItem('username', result.username);
+            localStorage.setItem('avatar', result.avatar);
             window.location = 'main.html';
             form.username.value = '';
             form.password.value = '';
@@ -36,3 +38,4 @@ let currentUrl = window.location.href;
 if (currentUrl.includes("/reset-password/confirm/")) {
     window.location.href = `${BASE_URL}/static/client/signin.html`;
 }
+

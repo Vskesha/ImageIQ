@@ -8,6 +8,7 @@ function updatePageWithUserImages(imagesData, accessToken) {
     if (Array.isArray(imagesData.items) && imagesData.items.length > 0) {
         imagesData.items.forEach(image => {
             const imageContainer = document.createElement('div');
+            imageContainer.classList.add('image-container');
             const imageElement = document.createElement('img');
             imageElement.src = image.link;
             imageElement.alt = image.description;
@@ -29,7 +30,7 @@ function updatePageWithUserImages(imagesData, accessToken) {
             }
 
             const deleteButton = document.createElement('button');
-            deleteButton.innerText = '❌';
+            deleteButton.innerText = '\u2716';
 
             deleteButton.addEventListener('click', async () => {
                 try {
@@ -84,7 +85,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         if (response.ok) {
             const imagesData = await response.json();
-            console.log('User images:', imagesData);
             updatePageWithUserImages(imagesData, accessToken);
         } else {
             const error = await response.json();
@@ -96,3 +96,130 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 
+document.addEventListener('DOMContentLoaded', async function () {
+    const profileLink = document.getElementById('profile-link');
+    const accessToken = localStorage.getItem('accessToken');
+    profileLink.addEventListener('click', async function (event) {
+        event.preventDefault();
+        try {
+
+            const response = await fetch(`${BASE_URL}/api/users/me`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (response.ok) {
+                const userData = await response.json();
+                console.log('Response data:', userData);
+                localStorage.setItem('userData', JSON.stringify(userData));
+                window.location = 'profile_template.html';
+            } else {
+                console.error('Request failed:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error during fetch:', error);
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const username = localStorage.getItem('username');
+    const avatar = localStorage.getItem('avatar');
+    document.getElementById('username').innerText = `${username}`;
+    document.getElementById('avatar').src = avatar;
+
+});
+
+
+document.getElementById('searchButton').addEventListener('click', function() {
+    const tag_name = document.getElementById('tagInput').value;
+    if (!tag_name) {
+        alert('Please enter a tag name');
+        return;
+    }
+     const access_token = localStorage.getItem('accessToken');
+    fetch(`${BASE_URL}/api/images/search_bytag/${tag_name}`, {
+        headers: {
+            'Authorization': `Bearer ${access_token}`
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            displayModalContent(data);
+        })
+        .catch(error => console.error('Error:', error));
+});
+
+
+const searchLink = document.getElementById('searchLink');
+const tagInput = document.getElementById('tagInput');
+const searchButton = document.getElementById('searchButton');
+const closeModalButton = document.getElementById('closeModalButton');
+const linkHide = document.getElementById('link-hide');
+
+
+function displayModalContent(data) {
+    console.log(data);
+    modalContent.innerHTML = '';
+    const modal = document.getElementById('myModal');
+    if (data && data.length > 0) {
+        const item = data[0];
+        const createdAt = new Date(item.created_at);
+        const formDate = createdAt.toISOString().split('T')[0];
+        const contentHTML = `
+            <h2>${item.description}</h2>
+            <p>Created at: ${formDate}</p>
+            <p>Photo: <a href="${item.link}" target="_blank"><img src="${item.link}" alt="Image"></a></p> `;
+        modalContent.innerHTML = contentHTML;
+        modal.style.display = 'block';
+    } else {
+        alert('No items found.');
+        modal.style.display = 'none';
+        linkHide.style.display = 'none';
+        searchLink.style.display = 'block';
+    }
+
+
+}
+
+
+function closeModal() {
+    const modal = document.getElementById('myModal');
+    modal.style.display = 'none';
+}
+
+
+
+searchLink.addEventListener('click', function() {
+    linkHide.style.display = 'inline-block';
+    searchLink.style.display = 'none';
+    tagInput.focus();
+
+    timeoutId = setTimeout(function() {
+        linkHide.style.display = 'none';
+        searchLink.style.display = 'inline-block';
+        tagInput.value = '';  // Очистка значення поля вводу
+    }, 5000);
+});
+
+
+tagInput.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        tagInput.style.display = 'none';
+        searchButton.style.display = 'none';
+        searchLink.style.display = 'inline-block';
+        tagInput.value = '';
+        clearTimeout(timeoutId);
+    }
+});
+
+
+closeModalButton.addEventListener('click', function() {
+    tagInput.value = '';
+    searchLink.style.display = 'inline-block';
+    linkHide.style.display = 'none';
+    closeModal();
+    clearTimeout(timeoutId);
+});

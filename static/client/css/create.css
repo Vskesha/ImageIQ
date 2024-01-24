@@ -250,19 +250,40 @@ footer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 40vh;
+    height: 48vh;
     border-radius: 5px;
-    width: 40%;
+    width: 24em;
+    min-width: 17em;
     border: 1px solid black;
     background: white;
     margin: 0 auto;
     margin-top: 20vh;
 }
 
+#imageForm #file{
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    border: none;
+ }
 
-label {padding: 0.8em;}
+#imageForm input{
+    padding-left: 2em;
+    border: 1px solid black;
+    border-radius: 0.3em;
+    min-width: 50%;}
+
+label {padding: 0.6em;}
 
 button{    background: #1b911b;
     padding: 0.5em;
     margin-top: 1em;
     border-radius: 8px;}
+
+
+.close {
+  color: #aaa;
+  float: right;
+  padding: 0.2em;
+  font-weight: bold;
+  align-self: end;
+}
