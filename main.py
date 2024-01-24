@@ -11,6 +11,7 @@ from fastapi_limiter import FastAPILimiter
 from fastapi_pagination import add_pagination
 from sqlalchemy import text
 from sqlalchemy.orm import Session
+from starlette.responses import RedirectResponse
 
 from src.database.db import get_db
 from src.routes import users, auth, images, comments, ratings
@@ -80,7 +81,10 @@ async def main(request: Request):
     :param request: Request: Get the request object that is passed to the function
     :return: A response object, which is a standard asgi response
     """
-    return templates.TemplateResponse("index.html", {"request": request, "title": "ImageIQ"})
+    static_page_url = "/static/client/main.html"
+
+    # Повертаємо RedirectResponse для перенаправлення
+    return RedirectResponse(url=static_page_url)
 
 
 @app.get('/project', response_class=HTMLResponse)
