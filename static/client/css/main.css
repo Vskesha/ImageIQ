@@ -399,7 +399,6 @@ ul.profile-stats-list li a {
 }
 
 img {display:block;
-    width: 14em;
     height: 14em;
     border: 1px solid black;
     margin: 0.2em;}
@@ -482,7 +481,8 @@ a.link-hide { color: black;}
 .image-container {
     display: flex;
     flex-direction: column;
-    align-items: center;}
+    align-items: center;
+    padding: 5px;}
 
 .image-container button {
     align-self: end;
