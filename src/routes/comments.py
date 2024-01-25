@@ -9,7 +9,7 @@ from src.conf import messages
 from src.database.db import get_db
 from src.database.models import Comment, User
 from src.repository import comments as repository_comments, images as repository_images
-from src.schemas.images import CommentModel, CommentResponse, SortDirection
+from src.schemas.images import CommentModel, CommentResponse, SortDirection, ImageResponse
 from src.schemas.users import MessageResponse
 from src.services.auth import auth_service
 from src.services.role import allowed_all_roles_access, allowed_admin_moderator
@@ -97,7 +97,7 @@ async def add_comment(
     image_id: int = Path(ge=1),
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_service.token_manager.get_current_user),
-) -> Optional[Comment]:
+) -> Optional[CommentResponse]:
     """
     The add_comment function creates a new comment for an image.
     The function takes in the following parameters:
@@ -118,7 +118,8 @@ async def add_comment(
             detail=messages.MSC404_IMAGE_NOT_FOUND,
         )
     comment = await repository_comments.add_comment(body, image_id, current_user, db)
-    return comment
+    comment_response = CommentResponse(**comment.__dict__, image_link=image.link)
+    return comment_response
 
 
 @router.patch(

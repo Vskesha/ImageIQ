@@ -25,6 +25,11 @@
                                 <span class="text nav-text">Main</span>
                             </a>
                         </li>
+                        <li class="link-hide" id="link-hide" style="display: none;">
+                            <input type="text" id="tagInput" placeholder="Enter tag name">
+                            <button id="searchButton" >Search by Tag</button>
+                        </li>
+
                         <li class="nav-link">
                             <a href="#">
                                 <i class="fa-regular fa-compass"></i>
@@ -49,12 +54,6 @@
                                 <span class="text nav-text">Notification</span>
                             </a>
                         </li>
-                        <li class="nav-link">
-                            <a href="/static/client/сreate.html">
-                                <i class="fa-regular fa-square-plus"></i>
-                                <span class="text nav-text">Сreate</span>
-                            </a>
-                        </li>
                          <li class="nav-link">
                             <a href="#">
                                 <i class="fa-solid fa-bars"></i>
@@ -67,28 +66,8 @@
         </nav>
         </div>
         <div class="part-main">
-            <div class="profile-wrapper">
-              <header class="profile-header">
-                <div class="profile-picture">
-                    <div class="image-profile_profile">
-                        <img id="avatar_profile" src="" alt="User Avatar">
-                    </div>
-                    <div class="profile-actions_profile">
-                        <ul id="user-details">
-                            <li id="username"></li>
-                            <li id="email"></li>
-                            <li id="comments_count"></li>
-                            <li id="images_count"></li>
-                            <li id="created_at"></li>
-                        </ul>
-                    </div>
-                     <p class="btn btn-primary-1" id="logoutButton">LOGOUT</p>
+                <div id="userImagesComments">
                 </div>
-              </header>
-            </div>
-            <div id="userImagesContainer">
-            </div>
-
             <footer>
                 <div class="footer-content">
                     <p>Інформація</p>
@@ -100,15 +79,18 @@
                     <p>Умови</p>
                     <p>Розташування</p>
                     <p>Завантаження контактів і люди, що не є користувачами</p>
-                    <p>Lite</p>
+                    <p>Instagram Lite</p>
                     <p>Threads</p>
                 </div>
                 <div class="footer-bottom">
-                    <p>Українська  &copy; ImageIQ, 2024</p>
+                    <p>Українська  &copy; Photoshare, 2024</p>
                 </div>
         </footer>
         </div>
     </div>
-    <script src="js/profile.js"></script>
+
+    <script src="js/comments.js"></script>
+
+
 </body>
 </html>

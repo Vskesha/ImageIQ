@@ -51,6 +51,7 @@ class CommentResponse(CommentModel):
     user_id: int
     created_at: datetime
     updated_at: datetime
+    image_link: str
 
     class Config:
         orm_mode = True
