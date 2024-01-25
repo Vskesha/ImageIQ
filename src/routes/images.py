@@ -56,7 +56,8 @@ async def get_images_all(
 async def get_images_by_user(
                  db: Session = Depends(get_db),
                  current_user: User = Depends(auth_service.token_manager.get_current_user),
-                 pagination_params: Params = Depends()
+                 pagination_params: Params = Depends(),
+                 sort_direction: SortDirection = SortDirection.desc
                     ) -> Page[ImageResponse]:
 
 
@@ -66,9 +67,10 @@ async def get_images_by_user(
         :param db: Session: Access the database
         :param current_user: User: Get the current user from the database
         :param pagination_params: Params: Get the pagination parameters from the request
+        :param sort_direction: SortDirection: Determine whether the images are sorted in ascending or descending order
         :return: A page object, which is a list of imageresponse objects
         """
-        images = await repository_images.get_images_by_user(db, current_user, pagination_params)
+        images = await repository_images.get_images_by_user(db, current_user, pagination_params, sort_direction)
         return images
 
 
