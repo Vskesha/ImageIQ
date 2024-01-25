@@ -3,7 +3,7 @@ from typing import Optional, List, Type
 from fastapi import HTTPException, status
 from fastapi_pagination import Page, Params
 from fastapi_pagination.ext.sqlalchemy import paginate
-from sqlalchemy import asc, desc
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from src.database.models import Image, Tag, Role
@@ -11,6 +11,7 @@ from src.conf import messages
 from src.repository import tags as repository_tags
 from src.database.models import User
 from src.schemas.images import ImageModel, ImageResponse, SortDirection
+
 
 async def get_images_all(
         db: Session,
@@ -32,7 +33,8 @@ async def get_images_all(
 async def get_images_by_user(
         db: Session,
         current_user: User,
-        pagination_params: Params
+        pagination_params: Params,
+        sort_direction: SortDirection
         ) -> Page[ImageResponse]:
 
     """
@@ -40,12 +42,20 @@ async def get_images_by_user(
     :param db: Session: Get access to the database
     :param current_user: User: Pass the current user into the function
     :param pagination_params: Params: Specify the pagination parameters
-    :return: A page object, which is a
+    :param sort_direction: SortDirection: Specify the sort direction of the images
+    :return: A page object
     :doc-author: Trelent
     """
     query = db.query(Image).filter(Image.user == current_user)
+
+    if sort_direction == SortDirection.asc:
+        query = query.order_by(Image.id)
+    else:
+        query = query.order_by(desc(Image.id))
+
     images = paginate(query, params=pagination_params)
     return images
+
 
 async def get_image(
     image_id: int,
@@ -129,7 +139,7 @@ async def transform_image(
             tags=body['tags']
         )
     except Exception as er:
-        return er
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Image not transformed")
 
     db.add(image)
     db.commit()
