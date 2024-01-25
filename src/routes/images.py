@@ -285,7 +285,7 @@ async def update_image(
             )
 async def get_image_by_tag_name(
                     tag_name: str,
-                    sort_direction: SortDirection = SortDirection.desc,
+                    sort_direction: SortDirection = SortDirection.desc ,
                     db: Session = Depends(get_db),
                     current_user: User = Depends(auth_service.token_manager.get_current_user),
             ) -> List[Image]:
