@@ -3,10 +3,12 @@ html {scale: 85%;}
 .main_top {
     display: flex;
     flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
     height: 100vh;
     margin: 0;
+    width: 100%;
 }
 
 body {
@@ -23,8 +25,6 @@ body {
 .form-signin {
     width: 100%;
     max-width: 20em;
-
-    margin: auto;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -148,7 +148,7 @@ main {
 }
 
 .photo_tel {
-    width: 25em;
+    width: 22em;
     height: 29em;
     padding-right: 1em;}
 
@@ -156,6 +156,13 @@ main {
     text-align: center;
     padding-top: 1.5em;
     text-decoration-skip-ink: none;}
+
+.small-text-center:hover{
+    scale: 1.1;}
+
+p.down-a:hover{
+    scale: 1.1;}
+
 
 a.text-center  {
     color: black;}

@@ -15,6 +15,7 @@ function updatePageWithUserImages(imagesData, accessToken) {
             imageLink.target = '_blank';
 
             const imageElement = document.createElement('img');
+            imageElement.classList.add('image-created')
             imageElement.src = image.link;
             imageElement.alt = image.description;
 
@@ -48,6 +49,7 @@ function updatePageWithUserImages(imagesData, accessToken) {
 
             const deleteButton = document.createElement('button');
             deleteButton.innerText = '\u2716';
+            deleteButton.classList.add('delete-button');
 
             deleteButton.addEventListener('click', async () => {
                 try {
@@ -218,7 +220,7 @@ searchLink.addEventListener('click', function() {
         linkHide.style.display = 'none';
         searchLink.style.display = 'inline-block';
         tagInput.value = '';  // Очистка значення поля вводу
-    }, 5000);
+    }, 15000);
 });
 
 
@@ -239,4 +241,30 @@ closeModalButton.addEventListener('click', function() {
     linkHide.style.display = 'none';
     closeModal();
     clearTimeout(timeoutId);
+});
+
+
+
+const logoutButton = document.getElementById('logoutButton');
+
+logoutButton.addEventListener('click', async () => {
+    try {
+        const accessToken = localStorage.getItem('accessToken');
+        const response = await fetch(`${BASE_URL}/api/auth/logout`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+
+        console.log(response.status, response.statusText);
+
+        if (response.status === 200) {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            window.location = '/static/client/signin.html';
+        }
+    } catch (error) {
+        console.error('An error occurred:', error);
+    }
 });
