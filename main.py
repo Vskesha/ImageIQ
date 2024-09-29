@@ -43,7 +43,9 @@ async def startup():
     r = await redis.Redis(
         host=settings.redis_host,
         port=settings.redis_port,
-        password=settings.redis_password)
+        password=settings.redis_password,
+        ssl=True,
+    )
     await FastAPILimiter.init(r)
 
 
